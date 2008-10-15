@@ -1,0 +1,10 @@
+Changelog
+=========
+
+1.0rc1 - October 15, 2008
+-------------------------
+
+* Initial release
+  [wichert]
+
+

@@ -1,11 +1,13 @@
 from setuptools import setup, find_packages
+import os.path
 
 version = "1.0dev"
 
 setup(name                  = "z3c.caching",
       version               = version,
       description           = "Caching infrastructure for web apps",
-      long_description      = open("README.txt").read(),
+      long_description      = open("README.txt").read() + "\n" +
+                              open(os.path.join("docs", "HISTORY.txt")).read(),
       classifiers           = [
             "Environment :: Web Environment",
             "Intended Audience :: Developers",
