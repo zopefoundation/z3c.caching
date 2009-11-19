@@ -80,5 +80,5 @@ else:
     del addCleanUp
 
 
-__all__ = [ "register", "unregister" ]
+__all__ = [ "register", "unregister", "lookup" ]
 
