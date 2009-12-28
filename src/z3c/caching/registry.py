@@ -36,6 +36,8 @@ class RulesetRegistry(object):
         self.registry = registry
 
     def register(self, obj, rule):
+        rule = str(rule) # We only want ascii, tyvm
+        
         factory = get_context_to_cacherule_adapter_factory(rule)
         existing = self.directLookup(obj)
         if existing is None:
