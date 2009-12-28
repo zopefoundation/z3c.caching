@@ -30,6 +30,9 @@ setup(name                  = "z3c.caching",
           "zope.interface",
           "zope.component",
           ],
+      extras_require        = {
+                                "zcml": ("zope.configuration", )
+                              },
       tests_require         = "nose >=0.10.0b1",
       test_suite            = "nose.collector",
       )
