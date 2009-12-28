@@ -8,9 +8,6 @@ import z3c.caching.tests
 from z3c.caching.tests.test_registry import (ITestView, IMoreSpecificTestView, 
                                              TestView, OtherTestView)
 
-def path(*p):
-    return os.path.join(os.path.dirname(__file__), *p)
-
 class TestZCMLDeclarations(TestCase):
 
     def setUp(self):
@@ -33,4 +30,3 @@ class TestZCMLDeclarations(TestCase):
     def test_conflicting_registrations(self):
         zcml = xmlconfig.XMLConfig("test2.zcml", z3c.caching.tests)
         self.assertRaises(Exception, zcml) # ZCML conflict error
-        
