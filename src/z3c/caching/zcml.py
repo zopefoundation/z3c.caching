@@ -1,7 +1,7 @@
 from zope.interface import Interface
 from zope.configuration.fields import GlobalObject
 from zope.configuration.fields import PythonIdentifier
-from z3c.caching.registry import register
+from z3c.caching.registry import getGlobalRulesetRegistry
 
 class IRuleset(Interface):
     for_ = GlobalObject(
@@ -18,6 +18,7 @@ class IRuleset(Interface):
 
 
 def ruleset(_context, for_, ruleset):
+    register = getGlobalRulesetRegistry().register
     _context.action(
             discriminator=("registerCacheRule", for_),
             callable = register,
