@@ -20,6 +20,13 @@ class CacheRule(object):
     def __init__(self, identifier):
         self.id = identifier
 
+def get_context_to_cacherule_adapter_factory(rule):
+    """Given a cache rule return an adapter factory which expects an object 
+    but only returns the pre-specified cache rule."""
+    def CacheRuleFactory(context):
+        return CacheRule(rule)
+    return CacheRuleFactory
+
 class RulesetRegistry(object):
 
     implements(IRulesetRegistry)
@@ -29,7 +36,7 @@ class RulesetRegistry(object):
         self.registry = registry
 
     def register(self, obj, rule):
-        factory = lambda context: CacheRule(rule)
+        factory = get_context_to_cacherule_adapter_factory(rule)
         existing = self.directLookup(obj)
         if existing is None:
             # Only register if we haven't got thisw one already
@@ -66,7 +73,7 @@ class RulesetRegistry(object):
         """Find a rule _directly_ assigned to `obj`"""
         for rule in self.registry.registeredAdapters():
             if rule.provided != ICacheRule:
-                pass
+                continue
             if rule.required == (obj, ):
                 return rule.factory(None).id
         return None
