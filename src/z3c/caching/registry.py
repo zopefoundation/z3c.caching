@@ -6,7 +6,7 @@ Luckily we have a framework which already implements that: zope.component.
 We will (ab)use the zope.component registries by registering a dummy adapter
 for the entity to a special ICacheRule interface and which will always return
 the ruleset id. """
-
+import warnings
 from zope.interface import implements
 from zope.component import adapts, getGlobalSiteManager
 from zope.component.interfaces import IComponents
@@ -29,9 +29,13 @@ class RulesetRegistry(object):
         self.registry = registry
 
     def register(self, obj, rule):
-        def r(context):
-            return lambda r=rule:r
-        self.registry.registerAdapter(r, provided=ICacheRule, required=(obj,))
+        factory = lambda context: CacheRule(rule)
+        existing = self.directLookup(obj)
+        if existing is None:
+            # Only register if we haven't got thisw one already
+            self.registry.registerAdapter(factory, provided=ICacheRule, required=(obj,))
+        else:
+            warnings.warn("Ignoring attempted to register caching rule %s for %s.  %s is already registered." % (rule, `obj`, existing))
         return None
 
 
@@ -55,7 +59,16 @@ class RulesetRegistry(object):
     def lookup(self, obj):
         ruler=ICacheRule(obj, None)
         if ruler is not None:
-            return ruler()
+            return ruler.id
+        return None
+
+    def directLookup(self, obj):
+        """Find a rule _directly_ assigned to `obj`"""
+        for rule in self.registry.registeredAdapters():
+            if rule.provided != ICacheRule:
+                pass
+            if rule.required == (obj, ):
+                return rule.factory(None).id
         return None
 
 
