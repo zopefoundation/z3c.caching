@@ -1,12 +1,10 @@
-import os
 from unittest import TestCase
 
-from zope.configuration import config, xmlconfig
+from zope.configuration import xmlconfig
 
 from z3c.caching.registry import getGlobalRulesetRegistry
 import z3c.caching.tests
-from z3c.caching.tests.test_registry import (ITestView, IMoreSpecificTestView, 
-                                             TestView, OtherTestView)
+from z3c.caching.tests.test_registry import TestView
 
 class TestZCMLDeclarations(TestCase):
 
@@ -30,3 +28,7 @@ class TestZCMLDeclarations(TestCase):
     def test_conflicting_registrations(self):
         zcml = xmlconfig.XMLConfig("test2.zcml", z3c.caching.tests)
         self.assertRaises(Exception, zcml) # ZCML conflict error
+
+def test_suite():
+    import unittest
+    return unittest.defaultTestLoader.loadTestsFromName(__name__)

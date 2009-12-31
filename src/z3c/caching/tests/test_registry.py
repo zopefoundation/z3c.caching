@@ -96,3 +96,6 @@ class TestRulesetRegistry(TestCase):
         self.registry.clear()
         self.failUnless(self.registry[i] is None)
     
+def test_suite():
+    import unittest
+    return unittest.defaultTestLoader.loadTestsFromName(__name__)
