@@ -96,6 +96,15 @@ class TestRulesetRegistry(TestCase):
         self.registry.clear()
         self.failUnless(self.registry[i] is None)
     
+    def test_enumerate(self):
+        self.registry.register(ITestView, "rule1")
+        self.registry.register(IMoreSpecificTestView, "rule2")
+        self.registry.register(OtherTestView, "rule2")
+        self.assertEqual(set(['rule1', 'rule2']), set(self.registry.enumerate()))
+    
+    def test_enumerate_empty(self):
+        self.assertEqual(set([]), set(self.registry.enumerate()))
+    
 def test_suite():
     import unittest
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

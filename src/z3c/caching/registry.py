@@ -25,6 +25,7 @@ def get_context_to_cacherule_adapter_factory(rule):
     but only returns the pre-specified cache rule."""
     def CacheRuleFactory(context):
         return CacheRule(rule)
+    CacheRuleFactory.id = rule
     return CacheRuleFactory
 
 class RulesetRegistry(object):
@@ -41,7 +42,7 @@ class RulesetRegistry(object):
         factory = get_context_to_cacherule_adapter_factory(rule)
         existing = self.directLookup(obj)
         if existing is None:
-            # Only register if we haven't got thisw one already
+            # Only register if we haven't got this one already
             self.registry.registerAdapter(factory, provided=ICacheRule, required=(obj,))
         else:
             warnings.warn("Ignoring attempted to register caching rule %s for %s.  %s is already registered." % (rule, `obj`, existing))
@@ -70,7 +71,16 @@ class RulesetRegistry(object):
         if ruler is not None:
             return ruler.id
         return None
-
+    
+    def enumerate(self):
+        seen = set()
+        for reg in self.registry.registeredAdapters():
+            if reg.provided != ICacheRule:
+                continue
+            if reg.factory.id not in seen:
+                yield reg.factory.id
+            seen.add(reg.factory.id)
+    
     def directLookup(self, obj):
         """Find a rule _directly_ assigned to `obj`"""
         for rule in self.registry.registeredAdapters():
@@ -79,7 +89,6 @@ class RulesetRegistry(object):
             if rule.required == (obj, ):
                 return rule.factory(None).id
         return None
-
 
     __getitem__ = lookup
 

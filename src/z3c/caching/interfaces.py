@@ -16,12 +16,18 @@ class IRulesetRegistry(Interface):
     def unregister(obj):
         """Remove any prior rule registration attached to obj in this 
         registry. N.B. registries are hierarchical, a parent may still 
-        provide rules."""
+        provide rules.
+        """
     
     def clear():
-        """Remove all rule registrations in this registry."""
+        """Remove all rule registrations in this registry.
+        """
     
     def lookup(obj):
         """Return the id of the rule associated with `obj`.  If no rule has 
         been registered `None` is returned.
+        """
+    
+    def enumerate():
+        """Return a sequence of all unique registered rule set ids (strings)
         """
