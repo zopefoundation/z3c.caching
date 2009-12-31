@@ -67,10 +67,8 @@ If you prefer to use python directly you can do so::
 
 To find the ruleset for an object use the ``lookup`` method::
 
-   from z3c.caching.registry import getGlobalRulesetRegistry
-   registry = getGlobalRulesetRegistry()
-
-   cacheRule = registry.lookup(FrontpageView)
+   from z3c.caching.registry import lookup
+   cacheRule = lookup(FrontpageView)
 
 Caching operations
 ------------------

@@ -92,3 +92,25 @@ class RulesetRegistry(object):
 
 def getGlobalRulesetRegistry():
     return IRulesetRegistry(getGlobalSiteManager(), None)
+
+# Convenience API
+
+def register(obj, rule):
+    registry = getGlobalRulesetRegistry()
+    if registry is None:
+        raise LookupError("Global not found initialised")
+    return registry.register(obj, rule)
+
+def unregister(obj):
+    registry = getGlobalRulesetRegistry()
+    if registry is None:
+        raise LookupError("Global not found initialised")
+    return registry.unregister(obj)
+
+def lookup(obj):
+    registry = getGlobalRulesetRegistry()
+    if registry is None:
+        return None
+    return registry.lookup(obj)
+
+__all__ = ['getGlobalRulesetRegistry', 'register', 'unregister', 'lookup']

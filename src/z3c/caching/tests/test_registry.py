@@ -111,7 +111,52 @@ class TestRulesetRegistry(TestCase):
     
     def test_enumerate_empty(self):
         self.assertEqual(set([]), set(self.registry.enumerate()))
+
+class TestConvenienceAPI(TestCase):
+
+    def setUp(self):
+        provideAdapter(RulesetRegistry)
+        self.registry = getGlobalRulesetRegistry()
     
+    def tearDown(self):
+        self.registry.clear()
+        zope.component.testing.tearDown()
+
+    def test_no_ruleset_returned_if_unregistered(self):
+        from z3c.caching.registry import lookup
+        self.failUnless(lookup(None) is None)
+
+    def test_ruleset_for_class(self):
+        from z3c.caching.registry import register, lookup
+        register(TestView, "frop")
+        i=TestView()
+        self.assertEqual(lookup(i), "frop")
+
+    def test_ruleset_for_interface(self):
+        from z3c.caching.registry import register, lookup
+        register(ITestView, "frop")
+        i=TestView()
+        self.assertEqual(lookup(i), "frop")
+    
+    def test_most_specific_interface_wins(self):
+        from z3c.caching.registry import register, lookup
+        register(ITestView, "frop")
+        register(IMoreSpecificTestView, "fribble")
+        i=OtherTestView()
+        self.assertEqual(lookup(i), "fribble")
+    
+    def test_unregistering_ruleset_removes_ruleset(self):
+        from z3c.caching.registry import register, unregister, lookup
+        register(TestView, "frop")
+        unregister(TestView)
+        self.failUnless(lookup(TestView) is None)
+
+    def test_unregistering_nonexistant_ruleset_doesnt_error(self):
+        from z3c.caching.registry import unregister, lookup
+        self.failUnless(lookup(TestView) is None)
+        unregister(TestView)
+        self.failUnless(lookup(TestView) is None)
+
 def test_suite():
     import unittest
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
