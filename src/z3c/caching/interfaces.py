@@ -1,4 +1,4 @@
-from zope.interface import Interface, Attribute
+from zope.interface import Interface
 
 class IRulesetRegistry(Interface):
     
@@ -91,11 +91,3 @@ class ILastModified(Interface):
     def __call__():
         """Return the last-modified date, as a Python datetime object.
         """
-
-class ICacheRule(Interface):
-    """Represents the cache rule applied to an object.
-    
-    This is strictly an implementation detail of IRulesetRegistry.
-    """
-    
-    id = Attribute("The identifier of this cache rule")

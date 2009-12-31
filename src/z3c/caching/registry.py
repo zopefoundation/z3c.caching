@@ -1,17 +1,28 @@
-""" Rulesets are registered for entities, which can be a type, an interface or
-even even a specific interface. This means the lookup mechanism needs to be
-aware of all of those and deal with things like derived classes as well.
-Luckily we have a framework which already implements that: zope.component.
+""" Rulesets are registered for entities, which can be a type or an interface.
+This means the lookup mechanism needs to be aware of all of those and deal
+with things like derived classes as well. Luckily we have a framework which
+already implements that: zope.component.
 
 We will (ab)use the zope.component registries by registering a dummy adapter
 for the entity to a special ICacheRule interface and which will always return
-the ruleset id. """
+the ruleset id.
+"""
+
 import warnings
-from zope.interface import implements
+
+from zope.interface import implements, Interface, Attribute
+
 from zope.component import adapts, getGlobalSiteManager
 from zope.component.interfaces import IComponents
 
-from interfaces import ICacheRule, IRulesetRegistry
+from z3c.caching.interfaces import IRulesetRegistry
+
+class ICacheRule(Interface):
+    """Represents the cache rule applied to an object.    
+    This is strictly an implementation detail of IRulesetRegistry.
+    """
+    
+    id = Attribute("The identifier of this cache rule")
 
 class CacheRule(object):
     __slots__ = ("id")
