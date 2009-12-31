@@ -1,11 +1,5 @@
 from zope.interface import Interface, Attribute
 
-class ICacheRule(Interface):
-    """Represents the cache rule applied to an object.
-    """
-    
-    id = Attribute("The identifier of this cache rule")
-
 class IRulesetRegistry(Interface):
     
     def register(obj, rule):
@@ -97,3 +91,11 @@ class ILastModified(Interface):
     def __call__():
         """Return the last-modified date, as a Python datetime object.
         """
+
+class ICacheRule(Interface):
+    """Represents the cache rule applied to an object.
+    
+    This is strictly an implementation detail of IRulesetRegistry.
+    """
+    
+    id = Attribute("The identifier of this cache rule")
