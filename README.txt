@@ -97,8 +97,7 @@ following two interfaces::
             cacheRule = registry.lookup(published)
             operation = getOperationFor(cacheRule)
         
-            mutator   = queryMultiAdapter((published, request,),
-                                            IResponseMutator, name=operation)
+            mutator   = queryMultiAdapter((published, request,), IResponseMutator, name=operation)
             mutator(response)
     
         Here, a cache rule is looked up for the published view. An operation is
@@ -106,8 +105,10 @@ following two interfaces::
         from cache rules to operations) and invoked.
         """
     
-        def __call__(response):
-            """Mutate the response
+        def __call__(ruleset, response):
+            """Mutate the response. ``rulset`` is the name of the caching ruleset
+            that was matched. It may be ``None``. ``response`` is the current
+            HTTP response.
             """
 
     class ICacheInterceptor(Interface):
@@ -125,18 +126,20 @@ following two interfaces::
             cacheRule = registry.lookup(published)
             operation = getInterceptorFor(cacheRule)
         
-            intercept = queryMultiAdapter((published, request,),
-                                            ICacheInterceptor, name=operation)
+            intercept = queryMultiAdapter((published, request,), ICacheInterceptor, name=operation)
             if intercept(response):
                 return # abort rendering and return what we have
         
             # continue as normal
         """
     
-        def __call__(response):
-            """Mutate the response if required. Return True if the response should
-            be intercepted. In this case, normal rendering may be aborted and the
-            response returned as-is.
+        def __call__(ruleset, response):
+            """Mutate the response if required. Return ``True`` if the response
+            should be intercepted. In this case, normal rendering may be aborted
+            and the response returned as-is.
+        
+            ``rulset`` is the name of the caching ruleset that was matched. It may
+            be ``None``. ``response`` is the current HTTP response.
             """
 
 In addition, a helper adapter interface is defined which can be used to

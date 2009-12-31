@@ -48,8 +48,10 @@ class IResponseMutator(Interface):
     from cache rules to operations) and invoked.
     """
     
-    def __call__(response):
-        """Mutate the response
+    def __call__(ruleset, response):
+        """Mutate the response. ``rulset`` is the name of the caching ruleset
+        that was matched. It may be ``None``. ``response`` is the current
+        HTTP response.
         """
 
 class ICacheInterceptor(Interface):
@@ -74,10 +76,13 @@ class ICacheInterceptor(Interface):
         # continue as normal
     """
     
-    def __call__(response):
-        """Mutate the response if required. Return True if the response should
-        be intercepted. In this case, normal rendering may be aborted and the
-        response returned as-is.
+    def __call__(ruleset, response):
+        """Mutate the response if required. Return ``True`` if the response
+        should be intercepted. In this case, normal rendering may be aborted
+        and the response returned as-is.
+        
+        ``rulset`` is the name of the caching ruleset that was matched. It may
+        be ``None``. ``response`` is the current HTTP response.
         """
 
 class ILastModified(Interface):
