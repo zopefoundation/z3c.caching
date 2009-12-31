@@ -67,9 +67,9 @@ class RulesetRegistry(object):
         return None
 
     def lookup(self, obj):
-        ruler=ICacheRule(obj, None)
-        if ruler is not None:
-            return ruler.id
+        rule = ICacheRule(obj, None)
+        if rule is not None:
+            return rule.id
         return None
     
     def enumerate(self):
