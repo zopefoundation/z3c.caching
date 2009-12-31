@@ -91,4 +91,4 @@ class RulesetRegistry(object):
     __getitem__ = lookup
 
 def getGlobalRulesetRegistry():
-    return IRulesetRegistry(getGlobalSiteManager())
+    return IRulesetRegistry(getGlobalSiteManager(), None)
