@@ -14,13 +14,11 @@ framework: it allows implementors to specify a ruleset for every component.
 Administrators can then define a policy which dictates the correct caching
 behaviour for each ruleset.
 
-
 Depending on your environment there are different options for turning
 the ruleset into HTTP caching headers. If you are using Plone_
 you can use `five.caching`_ to integrate with CacheSetup. In a WSGI
 environment you could set the ruleset in `environ` or a response header
 and add a piece of middleware which acts on those hints.
-
 
 Usage
 =====
@@ -44,6 +42,7 @@ use zcml you can use the ``cache:ruleset`` directive::
         name="frontpage_view"
         template="templates/frontpage_view.pt"
         permission="zope2.View" />
+
   </configure>
 
 
