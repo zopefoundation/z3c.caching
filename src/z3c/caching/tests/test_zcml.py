@@ -1,19 +1,25 @@
 from unittest import TestCase
 
+from zope.component import provideAdapter
 from zope.configuration import xmlconfig
 
 from z3c.caching.registry import getGlobalRulesetRegistry
-import z3c.caching.tests
+from z3c.caching.registry import RulesetRegistry
+
 from z3c.caching.tests.test_registry import TestView
+
+import zope.component.testing
+import z3c.caching.tests
 
 class TestZCMLDeclarations(TestCase):
 
     def setUp(self):
+        provideAdapter(RulesetRegistry)
         self.registry = getGlobalRulesetRegistry()
     
     def tearDown(self):
-        xmlconfig._clearContext()
         self.registry.clear()
+        zope.component.testing.tearDown()
 
     def test_simple_registration(self):
         i = TestView()

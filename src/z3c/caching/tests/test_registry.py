@@ -3,7 +3,12 @@ import warnings
 from zope.interface import Interface
 from zope.interface import implements
 
+from zope.component import provideAdapter
+
+from z3c.caching.registry import RulesetRegistry
 from z3c.caching.registry import getGlobalRulesetRegistry
+
+import zope.component.testing
 
 class ITestView(Interface):
     pass
@@ -21,10 +26,12 @@ class OtherTestView(object):
 class TestRulesetRegistry(TestCase):
 
     def setUp(self):
+        provideAdapter(RulesetRegistry)
         self.registry = getGlobalRulesetRegistry()
     
     def tearDown(self):
         self.registry.clear()
+        zope.component.testing.tearDown()
 
     def test_no_ruleset_returned_if_unregistered(self):
         self.failUnless(self.registry[None] is None)

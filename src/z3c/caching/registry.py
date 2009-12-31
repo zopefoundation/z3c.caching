@@ -75,11 +75,9 @@ class RulesetRegistry(object):
     def enumerate(self):
         seen = set()
         for reg in self.registry.registeredAdapters():
-            if reg.provided != ICacheRule:
-                continue
-            if reg.factory.id not in seen:
+            if reg.provided == ICacheRule and reg.factory.id not in seen:
                 yield reg.factory.id
-            seen.add(reg.factory.id)
+                seen.add(reg.factory.id)
     
     def directLookup(self, obj):
         """Find a rule _directly_ assigned to `obj`"""
@@ -91,9 +89,6 @@ class RulesetRegistry(object):
         return None
 
     __getitem__ = lookup
-
-# Set up RulesetRegistry as an adapter for component roots
-getGlobalSiteManager().registerAdapter(RulesetRegistry)
 
 def getGlobalRulesetRegistry():
     return IRulesetRegistry(getGlobalSiteManager())

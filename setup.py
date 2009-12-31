@@ -29,6 +29,7 @@ setup(name                  = "z3c.caching",
           "setuptools",
           "zope.interface",
           "zope.component",
+          "zope.browser",
           ],
       extras_require        = {
                                 "zcml": ("zope.configuration", )

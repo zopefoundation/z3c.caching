@@ -4,8 +4,20 @@ Changelog
 2.0a1 - Unreleased
 ------------------
 
+* Added ``ILastModified`` implementation for a view which delegates to the
+  view's context.
+  [optilude]
 
+* Added interfaces for response mutation (e.g. to set interfaces) and
+  interception (304 type responses)
+  [optilude]
 
+* Added ``enumerate()`` method to the registry, used to list all currently
+  used cache rule ids.
+  [optilude]
+
+* Made the registry use the ZCA more directly.
+  [matthewwilkes]
 
 1.0b1 - October 15, 2008
 ------------------------
