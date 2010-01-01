@@ -8,10 +8,6 @@ Changelog
   view's context.
   [optilude]
 
-* Added interfaces for response mutation (e.g. to set interfaces) and
-  interception (304 type responses)
-  [optilude]
-
 * Added ``enumerate()`` method to the registry, used to list all currently
   used cache rule ids.
   [optilude]

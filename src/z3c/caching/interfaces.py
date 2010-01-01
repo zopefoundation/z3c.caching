@@ -26,65 +26,6 @@ class IRulesetRegistry(Interface):
         """Return a sequence of all unique registered rule set ids (strings)
         """
 
-class IResponseMutator(Interface):
-    """Represents a caching operation, typically setting of response headers.
-    
-    Should be registered as a named multi-adapter from a cacheable object
-    (e.g. a view, or just Interface for a general operation) and the request.
-    
-    A higher level framework is assumed to do something like this::
-    
-        registry  = getGlobalRulesetRegistry()
-        published = getPublishiedView(request)
-        
-        cacheRule = registry.lookup(published)
-        operation = getOperationFor(cacheRule)
-        
-        mutator   = queryMultiAdapter((published, request,), IResponseMutator, name=operation)
-        mutator(response)
-    
-    Here, a cache rule is looked up for the published view. An operation is
-    then looked up for the cache rule (presuming there exists some mapping
-    from cache rules to operations) and invoked.
-    """
-    
-    def __call__(ruleset, response):
-        """Mutate the response. ``rulset`` is the name of the caching ruleset
-        that was matched. It may be ``None``. ``response`` is the current
-        HTTP response.
-        """
-
-class ICacheInterceptor(Interface):
-    """Represents a caching intercept, typically for the purposes of sending
-    a 304 response.
-    
-    Should be registered as a named multi-adapter from a cacheable object
-    (e.g. a view, or just Interface for a general operation) and the request.
-    
-    A higher level framework is assumed to do something like this::
-    
-        registry  = getGlobalRulesetRegistry()
-        published = getPublishiedView(request)
-        
-        cacheRule = registry.lookup(published)
-        operation = getInterceptorFor(cacheRule)
-        
-        intercept = queryMultiAdapter((published, request,), ICacheInterceptor, name=operation)
-        if intercept(response):
-            return # abort rendering and return what we have
-        
-        # continue as normal
-    """
-    
-    def __call__(ruleset, response):
-        """Mutate the response if required. Return ``True`` if the response
-        should be intercepted. In this case, normal rendering may be aborted
-        and the response returned as-is.
-        
-        ``rulset`` is the name of the caching ruleset that was matched. It may
-        be ``None``. ``response`` is the current HTTP response.
-        """
-
 class ILastModified(Interface):
     """An abstraction to help obtain a last-modified date for a published
     resource.

@@ -70,80 +70,11 @@ To find the ruleset for an object use the ``lookup`` method::
    from z3c.caching.registry import lookup
    cacheRule = lookup(FrontpageView)
 
-Caching operations
-------------------
+Last modified date/time
+-----------------------
 
-This package does not directly include support for performing caching
-operations such as setting response headers. However, it defines interfaces
-which can be used by a framework such as `five.caching`_ or `plone.caching`_
-for this purpose.
-
-The basic principle is that a *cache rule* is looked up for the view or other
-resource published, as shown above. This is a string, which can then be mapped
-to a caching operation. Operations can be implemented using one of the
-following two interfaces::
-
-    class IResponseMutator(Interface):
-        """Represents a caching operation, typically setting of response headers.
-    
-        Should be registered as a named multi-adapter from a cacheable object
-        (e.g. a view, or just Interface for a general operation) and the request.
-    
-        A higher level framework is assumed to do something like this::
-    
-            registry  = getGlobalRulesetRegistry()
-            published = getPublishiedView(request)
-        
-            cacheRule = registry.lookup(published)
-            operation = getOperationFor(cacheRule)
-        
-            mutator   = queryMultiAdapter((published, request,), IResponseMutator, name=operation)
-            mutator(response)
-    
-        Here, a cache rule is looked up for the published view. An operation is
-        then looked up for the cache rule (presuming there exists some mapping
-        from cache rules to operations) and invoked.
-        """
-    
-        def __call__(ruleset, response):
-            """Mutate the response. ``rulset`` is the name of the caching ruleset
-            that was matched. It may be ``None``. ``response`` is the current
-            HTTP response.
-            """
-
-    class ICacheInterceptor(Interface):
-        """Represents a caching intercept, typically for the purposes of sending
-        a 304 response.
-    
-        Should be registered as a named multi-adapter from a cacheable object
-        (e.g. a view, or just Interface for a general operation) and the request.
-    
-        A higher level framework is assumed to do something like this::
-    
-            registry  = getGlobalRulesetRegistry()
-            published = getPublishiedView(request)
-        
-            cacheRule = registry.lookup(published)
-            operation = getInterceptorFor(cacheRule)
-        
-            intercept = queryMultiAdapter((published, request,), ICacheInterceptor, name=operation)
-            if intercept(response):
-                return # abort rendering and return what we have
-        
-            # continue as normal
-        """
-    
-        def __call__(ruleset, response):
-            """Mutate the response if required. Return ``True`` if the response
-            should be intercepted. In this case, normal rendering may be aborted
-            and the response returned as-is.
-        
-            ``rulset`` is the name of the caching ruleset that was matched. It may
-            be ``None``. ``response`` is the current HTTP response.
-            """
-
-In addition, a helper adapter interface is defined which can be used to
-determine the last modified date of a given content item::
+A helper adapter interface is defined which can be used to determine the last
+modified date of a given published object::
 
     class ILastModified(Interface):
         """An abstraction to help obtain a last-modified date for a published
@@ -159,7 +90,8 @@ determine the last modified date of a given content item::
 
 One implementation exists for this interface: When looked up for a Zope
 browser view, it will delegate to an ``ILastModified`` adapter on the view's
-context.
+context. Higher level packages may choose to implement this adapter for
+other types of publishable resources, and/or different types of view context.
 
 .. _Plone: http://plone.org/
 .. _CacheFu: http://plone.org/products/cachefu
