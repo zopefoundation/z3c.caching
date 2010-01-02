@@ -36,7 +36,13 @@ use zcml you can use the ``cache:ruleset`` directive::
       xmlns="http://namespaces.zope.org/zope"
       xmlns:browser="http://namespaces.zope.org/browser"
       xmlns:cache="http://namespaces.zope.org/cache"/>
-
+    
+    <cache:rulesetType
+        name="plone-content-types"
+        title="Plone content types"
+        description="Non-folderish content types"
+        />
+    
     <cache:ruleset
         for=".frontpage.FrontpageView"
         ruleset="plone-content-types"
@@ -58,6 +64,10 @@ You can specify either a class or an interface in the ``for`` attribute. As
 with an adapter registration, a more specific registration can be used to
 override a more generic one.
 
+Above, we also add some metadata about the type of ruleset using the
+``<cache:rulesetType />`` directive. This is principally useful for UI support
+and can be often be skipped.
+
 If you prefer to use python directly you can do so::
 
    from z3c.caching.registry import register
@@ -65,10 +75,38 @@ If you prefer to use python directly you can do so::
 
    register(FrontpageView, "plone-content-types")
 
-To find the ruleset for an object use the ``lookup`` method::
+To find the ruleset for an object use the ``lookup()`` method::
 
    from z3c.caching.registry import lookup
    cacheRule = lookup(FrontpageView)
+
+To declare the ruleset type metadata, use the ``declareType`` method::
+
+   from z3c.caching.registry import declareType
+   declareType = declareType(name="plone-content-types", \
+                             title=u"Plone content types", \
+                             description=u"Non-folderish content types")
+
+If you want to get a list of all declared types, use the ``enumerateTypes()``
+method::
+
+    from z3c.caching.registry import enumerate
+    for type_ in enumerateTypes():
+        ...
+
+The ``type_`` object provides ``IRulesetType`` and has attributes for
+``name``, ``title`` and ``description``.
+
+Strict mode
+-----------
+
+By default, you are not required to declare the type of a ruleset before using
+it. This is convenient, but increases the risk of typos or a proliferation of
+rulesets that are semantically equivalent. If you want to guard against this
+case, you can put the ruleset into explicit mode, like this::
+
+    from z3c.caching.registry import setExplicitMode
+    setExplicitMode(True)
 
 Last modified date/time
 -----------------------

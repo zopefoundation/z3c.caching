@@ -4,11 +4,15 @@ Changelog
 2.0a1 - Unreleased
 ------------------
 
+* Added concept of an explicitly declare ruleset type. Optional by default,
+  but can be made required by setting `explicit` to `True`.
+  [optilude]
+
 * Added ``ILastModified`` implementation for a view which delegates to the
   view's context.
   [optilude]
 
-* Added ``enumerate()`` method to the registry, used to list all currently
+* Added ``enumerateTypes()`` method to the registry, used to list all currently
   used cache rule ids.
   [optilude]
 

@@ -1,10 +1,11 @@
 from zope.interface import Interface
+from zope import schema
 
 class IRulesetRegistry(Interface):
     
     def register(obj, rule):
         """Mark objects that are implementers of `obj` to use the caching 
-        rule `rule`.  The value for `rule` MUST be a valid python identifier.
+        rule `rule`.
         """
     
     def unregister(obj):
@@ -22,9 +23,35 @@ class IRulesetRegistry(Interface):
         been registered `None` is returned.
         """
     
-    def enumerate():
-        """Return a sequence of all unique registered rule set ids (strings)
+    def __getitem__(obj):
+        """Convenience spelling for `lookup(obj)`.
         """
+    
+    def declareType(name, type, description):
+        """Declare a new ruleset type. This will put a new `IRulesetType`
+        into the list of objects returned by `enumerate`.
+        """
+    
+    def enumerateTypes():
+        """Return a sequence of all unique registered rule set types, as
+        ``IRuleSetType`` objects.
+        """
+    
+    explicit = schema.Bool(
+            title=u"Explicit mode",
+            description=u"If true, ruleset types must be declared before being used.",
+            required=True,
+            default=False
+        )
+
+class IRulesetType(Interface):
+    """A ruleset type. The name can be used in a <cache:ruleset /> directive.
+    The title and description are used for UI support.
+    """
+    
+    name        = schema.ASCIILine(title=u"Ruleset name")
+    title       = schema.TextLine(title=u"Title")
+    description = schema.TextLine(title=u"Description", required=False)
 
 class ILastModified(Interface):
     """An abstraction to help obtain a last-modified date for a published

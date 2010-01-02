@@ -5,6 +5,12 @@
   <meta:directives namespace="http://namespaces.zope.org/cache">
     
     <meta:directive
+        name="rulesetType"
+        schema=".interfaces.IRulesetType"
+        handler=".zcml.rulesetType"
+        />
+    
+    <meta:directive
         name="ruleset"
         schema=".zcml.IRuleset"
         handler=".zcml.ruleset"

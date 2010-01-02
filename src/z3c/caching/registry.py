@@ -12,10 +12,11 @@ import warnings
 
 from zope.interface import implements, Interface, Attribute
 
-from zope.component import adapts, getGlobalSiteManager
+from zope.component import adapts, queryUtility, getUtilitiesFor, getGlobalSiteManager
 from zope.component.interfaces import IComponents
 
 from z3c.caching.interfaces import IRulesetRegistry
+from z3c.caching.interfaces import IRulesetType
 
 class ICacheRule(Interface):
     """Represents the cache rule applied to an object.    
@@ -30,6 +31,15 @@ class CacheRule(object):
     
     def __init__(self, identifier):
         self.id = identifier
+
+class RulesetType(object):
+    __slots__ = ('name', 'title', 'description',)
+    implements(IRulesetType)
+    
+    def __init__(self, name, title, description):
+        self.name = name
+        self.title = title
+        self.description = description
 
 def get_context_to_cacherule_adapter_factory(rule):
     """Given a cache rule return an adapter factory which expects an object 
@@ -46,9 +56,12 @@ class RulesetRegistry(object):
 
     def __init__(self, registry):
         self.registry = registry
-
+        
     def register(self, obj, rule):
         rule = str(rule) # We only want ascii, tyvm
+        
+        if self.explicit and queryUtility(IRulesetType, rule) is None:
+            raise LookupError("Explicit mode set and ruleset %s not found" % rule)
         
         factory = get_context_to_cacherule_adapter_factory(rule)
         existing = self.directLookup(obj)
@@ -64,7 +77,6 @@ class RulesetRegistry(object):
         self.registry.unregisterAdapter(provided=ICacheRule, required=(obj,))
         return None
 
-
     def clear(self):
         # We force the iterator to be evaluated to start with as the backing
         # storage will be changing size
@@ -75,6 +87,16 @@ class RulesetRegistry(object):
                 self.registry.unregisterAdapter(factory=rule.factory,
                                                 provided=rule.provided, 
                                                 required=rule.required)
+        
+        for type_ in list(self.registry.registeredUtilities()):
+            if type_.provided != IRulesetType:
+                continue # Not our responsibility
+            else:
+                self.registry.unregisterUtility(component=type_.component,
+                                                provided=IRulesetType, 
+                                                name=type_.name)
+        
+        self.explicit = False
         return None
 
     def lookup(self, obj):
@@ -83,12 +105,23 @@ class RulesetRegistry(object):
             return rule.id
         return None
     
-    def enumerate(self):
-        seen = set()
-        for reg in self.registry.registeredAdapters():
-            if reg.provided == ICacheRule and reg.factory.id not in seen:
-                yield reg.factory.id
-                seen.add(reg.factory.id)
+    __getitem__ = lookup
+    
+    def declareType(self, name, title, description):
+        type_ = RulesetType(name, title, description)
+        self.registry.registerUtility(type_, IRulesetType, name=name)
+    
+    def enumerateTypes(self):
+        for name, type_ in getUtilitiesFor(IRulesetType):
+            yield type_
+    
+    def _get_explicit(self):
+        return getattr(self.registry, '_z3c_caching_explicit', False)
+    def _set_explicit(self, value):
+        setattr(self.registry, '_z3c_caching_explicit', value)
+    explicit = property(_get_explicit, _set_explicit)
+    
+    # Helper methods
     
     def directLookup(self, obj):
         """Find a rule _directly_ assigned to `obj`"""
@@ -99,8 +132,6 @@ class RulesetRegistry(object):
                 return rule.factory(None).id
         return None
 
-    __getitem__ = lookup
-
 def getGlobalRulesetRegistry():
     return IRulesetRegistry(getGlobalSiteManager(), None)
 
@@ -109,13 +140,13 @@ def getGlobalRulesetRegistry():
 def register(obj, rule):
     registry = getGlobalRulesetRegistry()
     if registry is None:
-        raise LookupError("Global not found initialised")
+        raise LookupError("Global registry initialised")
     return registry.register(obj, rule)
 
 def unregister(obj):
     registry = getGlobalRulesetRegistry()
     if registry is None:
-        raise LookupError("Global not found initialised")
+        raise LookupError("Global registry initialised")
     return registry.unregister(obj)
 
 def lookup(obj):
@@ -124,4 +155,23 @@ def lookup(obj):
         return None
     return registry.lookup(obj)
 
-__all__ = ['getGlobalRulesetRegistry', 'register', 'unregister', 'lookup']
+def enumerateTypes():
+    registry = getGlobalRulesetRegistry()
+    if registry is None:
+        raise LookupError("Global registry initialised")
+    return registry.enumerateTypes()
+
+def declareType(name, title, description):
+    registry = getGlobalRulesetRegistry()
+    if registry is None:
+        raise LookupError("Global registry initialised")
+    registry.declareType(name, title, description)
+
+def setExplicitMode(mode=True):
+    registry = getGlobalRulesetRegistry()
+    if registry is None:
+        raise LookupError("Global registry initialised")
+    registry.explicit = mode
+
+__all__ = ['getGlobalRulesetRegistry', 'register', 'unregister', 'lookup',
+           'enumerate', 'declareType', 'setExplicitMode']
