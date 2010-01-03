@@ -17,18 +17,24 @@ class IRuleset(Interface):
             required=True)
 
 def rulesetType(_context, name, title, description=u""):
-    declareType = getGlobalRulesetRegistry().declareType
     _context.action(
             discriminator=("declareCacheRuleSetType", name),
             callable=declareType,
             args=(name, title, description,),
-            order=-10)
+            order=10)
 
 
 def ruleset(_context, for_, ruleset):
-    register = getGlobalRulesetRegistry().register
     _context.action(
             discriminator=("registerCacheRule", for_),
             callable=register,
             args=(for_, ruleset,),
-            order=10)
+            order=20)
+
+# Handlers
+
+def declareType(name, title, description):
+    getGlobalRulesetRegistry().declareType(name, title, description)
+
+def register(for_, ruleset):
+    getGlobalRulesetRegistry().register(for_, ruleset)
