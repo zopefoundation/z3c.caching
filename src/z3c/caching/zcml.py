@@ -3,6 +3,8 @@ from zope.configuration.fields import GlobalObject
 from zope.configuration.fields import PythonIdentifier
 from z3c.caching.registry import getGlobalRulesetRegistry
 
+ORDER = 1000001
+
 class IRuleset(Interface):
     for_ = GlobalObject(
             title=u"Object to be configured",
@@ -17,19 +19,25 @@ class IRuleset(Interface):
             required=True)
 
 def rulesetType(_context, name, title, description=u""):
+    # The order is 'late' so that we know getGlobalRulesetRegistry() will
+    # return something real. The default order of a configuration action is
+    # determined by a counter, so in systems with a large number of components
+    # registered, a big number is called for to ensure that we occur after
+    # z3c.caching has been configured.
     _context.action(
             discriminator=("declareCacheRuleSetType", name),
             callable=declareType,
             args=(name, title, description,),
-            order=10)
+            order=ORDER)
 
 
 def ruleset(_context, for_, ruleset):
+    # We need to ensure this has a higher order than rulesetType() always
     _context.action(
             discriminator=("registerCacheRule", for_),
             callable=register,
             args=(for_, ruleset,),
-            order=20)
+            order=ORDER + 1)
 
 # Handlers
 
