@@ -118,8 +118,8 @@ modified date of a given published object::
         """An abstraction to help obtain a last-modified date for a published
         resource.
     
-        Should be registered as an unnamed multi-adapter from a published object
-        (e.g. a view) and the request.
+        Should be registered as an unnamed adapter from a published object
+        (e.g. a view).
         """
     
         def __call__():

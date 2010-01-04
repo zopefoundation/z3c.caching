@@ -57,10 +57,12 @@ class ILastModified(Interface):
     """An abstraction to help obtain a last-modified date for a published
     resource.
     
-    Should be registered as an unnamed multi-adapter from a published object
-    (e.g. a view) and the request.
+    Should be registered as an unnamed adapter from a published object
+    (e.g. a view).
     """
     
     def __call__():
         """Return the last-modified date, as a Python datetime object.
+        
+        May return None if the last modified date cannot be determined.
         """
