@@ -5,7 +5,8 @@ class IRulesetRegistry(Interface):
     
     def register(obj, rule):
         """Mark objects that are implementers of `obj` to use the caching 
-        rule `rule`.
+        rule `rule`. The name should be a dotted name, consisting only of
+        upper or lowercase letters, digits, and/or periods.
         """
     
     def unregister(obj):
@@ -29,7 +30,9 @@ class IRulesetRegistry(Interface):
     
     def declareType(name, type, description):
         """Declare a new ruleset type. This will put a new `IRulesetType`
-        into the list of objects returned by `enumerate`.
+        into the list of objects returned by `enumerate`. The name should be
+        a dotted name, consisting only of upper or lowercase letters, digits,
+        and/or periods.
         """
     
     def enumerateTypes():
@@ -49,7 +52,7 @@ class IRulesetType(Interface):
     The title and description are used for UI support.
     """
     
-    name        = schema.ASCIILine(title=u"Ruleset name")
+    name        = schema.DottedName(title=u"Ruleset name")
     title       = schema.TextLine(title=u"Title")
     description = schema.TextLine(title=u"Description", required=False)
 

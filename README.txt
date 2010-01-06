@@ -29,8 +29,8 @@ the ruleset into HTTP caching headers.
 Usage
 =====
 
-You can register rulesets using either zcml or direct python. If you
-use zcml you can use the ``cache:ruleset`` directive::
+You can register rulesets using either ZCML or directly in python. If you
+use ZCML you can use the ``<cache:ruleset />`` directive::
 
   <configure
       xmlns="http://namespaces.zope.org/zope"
@@ -38,14 +38,14 @@ use zcml you can use the ``cache:ruleset`` directive::
       xmlns:cache="http://namespaces.zope.org/cache"/>
     
     <cache:rulesetType
-        name="plone-content-types"
+        name="plone.contentTypes"
         title="Plone content types"
         description="Non-folderish content types"
         />
     
     <cache:ruleset
         for=".frontpage.FrontpageView"
-        ruleset="plone-content-types"
+        ruleset="plone.contentTypes"
         />
 
     <browser:page
@@ -58,7 +58,12 @@ use zcml you can use the ``cache:ruleset`` directive::
   </configure>
 
 This example sets up a browser view called ``frontpage_view`` and
-associates it with the ``plone-content-types`` ruleset.
+associates it with the ``plone.contentTypes`` ruleset.
+
+**NOTE:** Ruleset names should be *dotted names*. That is, they should consist
+only of upper or lowercase letters, digits, underscores and/or periods (dots).
+The idea is that this forms a namespace similar to namespaces created by
+packages and modules in Python.
 
 You can specify either a class or an interface in the ``for`` attribute. As
 with an adapter registration, a more specific registration can be used to
@@ -73,7 +78,7 @@ If you prefer to use python directly you can do so::
    from z3c.caching.registry import register
    from frontpage import FrontpageView
 
-   register(FrontpageView, "plone-content-types")
+   register(FrontpageView, "plone.contentTypes")
 
 To find the ruleset for an object use the ``lookup()`` method::
 
@@ -83,7 +88,7 @@ To find the ruleset for an object use the ``lookup()`` method::
 To declare the ruleset type metadata, use the ``declareType`` method::
 
    from z3c.caching.registry import declareType
-   declareType = declareType(name="plone-content-types", \
+   declareType = declareType(name="plone.contentTypes", \
                              title=u"Plone content types", \
                              description=u"Non-folderish content types")
 
