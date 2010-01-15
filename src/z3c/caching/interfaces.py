@@ -67,5 +67,7 @@ class ILastModified(Interface):
     def __call__():
         """Return the last-modified date, as a Python datetime object.
         
+        The datetime returned must be timezone aware.
+        
         May return None if the last modified date cannot be determined.
         """

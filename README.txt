@@ -129,6 +129,10 @@ modified date of a given published object::
     
         def __call__():
             """Return the last-modified date, as a Python datetime object.
+            
+            The datetime returned must be timezone aware.
+        
+            May return None if the last modified date cannot be determined.
             """
 
 One implementation exists for this interface: When looked up for a Zope
