@@ -1,4 +1,5 @@
 from zope.interface import Interface
+from zope.component.interfaces import IObjectEvent
 from zope import schema
 
 class IRulesetRegistry(Interface):
@@ -67,7 +68,55 @@ class ILastModified(Interface):
     def __call__():
         """Return the last-modified date, as a Python datetime object.
         
-        The datetime returned must be timezone aware.
+        The datetime returned must be timezone aware and should normally be
+        in the local timezone.
         
         May return None if the last modified date cannot be determined.
+        """
+
+class IPurgeEvent(IObjectEvent):
+    """Event which can be fired to purge a particular object.
+    
+    This event is not fired anywhere in this package. Instead, higher level
+    frameworks are expected to fire this event when an object may need to be
+    purged.
+    
+    It is safe to fire the event multiple times for the same object. A given
+    object will only be purged once.
+    """
+
+class IPurgeable(Interface):
+    """Marker interface for content which should be purged when modified or
+    removed.
+    
+    Event handlers are registered for ``IObjectModifiedEvent`` and
+    ``IObjectRemovedEvent`` for contexts providing this interface. These are
+    automatically purged.
+    """
+
+class IPurgePaths(Interface):
+    """Return paths to send as PURGE requests for a given object.
+    
+    The purging hook will look up named adapters from the objects sent to
+    the purge queue (usually by an IPurgeEvent being fired) to this interface.
+    The name is not significant, but is used to allow multiple implementations
+    whilst still permitting per-type overrides. The names should therefore
+    normally be unique, prefixed with the dotted name of the package to which
+    they belong.
+    """
+    
+    def getRelativePaths():
+        """Return a list of paths that should be purged. The paths should be
+        relative to the virtual hosting root, i.e. they should start with a
+        '/'.
+        
+        These paths will be rewritten to incorporate virtual hosting if
+        necessary.
+        """
+        
+    def getAbsolutePaths():
+        """Return a list of paths that should be purged. The paths should be
+        relative to the domain root, i.e. they should start with a '/'.
+        
+        These paths will *not* be rewritten to incorporate virtual hosting.
         """

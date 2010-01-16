@@ -29,6 +29,8 @@ setup(name                  = "z3c.caching",
           "setuptools",
           "zope.interface",
           "zope.component",
+          "zope.event",
+          "zope.lifecycleevent",
           "zope.browser",
           ],
       extras_require        = {

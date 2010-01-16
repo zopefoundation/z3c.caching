@@ -4,6 +4,14 @@ Changelog
 2.0a1 - Unreleased
 ------------------
 
+* Added `Purge`` event and ``IPurgeable` and ``IPurgePaths`` interfaces.
+  Although this package doesn't provide any purging support, it is convenient
+  to keep the interfaces necessary for other packages to describe their cache
+  purging behaviour here. This allows a relatively harmless dependency on
+  z3c.caching, even in generic code, as distinct from a higher-level,
+  application server specific framework.
+  [optilude]
+
 * Added concept of an explicitly declare ruleset type. Optional by default,
   but can be made required by setting `explicit` to `True`.
   [optilude]

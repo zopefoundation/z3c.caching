@@ -3,4 +3,7 @@
     <adapter factory=".registry.RulesetRegistry" />
     <adapter factory=".lastmodified.viewDelegateLastModified" />
 
+    <subscriber handler=".purge.purgeOnModified" />
+    <subscriber handler=".purge.purgeOnMovedOrRemoved" />
+
 </configure>

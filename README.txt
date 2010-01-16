@@ -20,9 +20,11 @@ the ruleset into HTTP caching headers.
 * If you are using Plone_ 3 and CacheFu_ you can use `five.caching`_ to
   integrate with CacheSetup.
 * If you are using Zope 2.12 or later, you can use `plone.caching`_ to
-  integrate with the publisher events.
+  integrate with the publisher events and `plone.cachepurging`_ if you require
+  support for ``PURGE`` requests.
 * If you are using Plone 4, you can also use `plone.app.caching`_, which
-  provides UI and default operations.
+  provides UI and default behaviour for `plone.caching`_ and
+  `plone.cachepurging`_.
 * In a WSGI environment you could set the ruleset in `environ` or a response
   header and add a piece of middleware which acts on those hints.
 
@@ -36,6 +38,8 @@ use ZCML you can use the ``<cache:ruleset />`` directive::
       xmlns="http://namespaces.zope.org/zope"
       xmlns:browser="http://namespaces.zope.org/browser"
       xmlns:cache="http://namespaces.zope.org/cache"/>
+    
+    <include package="z3c.caching" file="meta.zcml" />
     
     <cache:rulesetType
         name="plone.contentTypes"
@@ -113,10 +117,34 @@ case, you can put the ruleset into explicit mode, like this::
     from z3c.caching.registry import setExplicitMode
     setExplicitMode(True)
 
+Information about cacheable resources
+=====================================
+
+This package is intentionally simple, and depends only on a small set of core
+Zope Toolkit packages. However, real-world caching often requires specific
+information about published (and potentially cacheable) resources, such as
+when the underlying resource was last modified, and which URLs to purge if
+the caching proxy needs to be purged.
+
+``z3c.caching`` aims to be a "safe" and minimalist dependency for packages
+which want to declare how they can be cached. Hence, whilst the implementation
+of such things as setting cache control response headers and supporting
+purging of a caching reverse proxy are left up to other packages,
+``z3c.caching`` provides a few interfaces which "caching-aware" packages can
+implement, for higher level frameworks (such as `plone.caching`_ and
+`plone.cachepurging`_) to rely on. This avoids a direct dependency between
+such packages and those higher level frameworks.
+
+These interfaces are described below. A few helper components are also
+provided. To configure them, you can include ``z3c.caching``'s ZCML
+configuration::
+
+    <include package="z3c.caching" />
+
 Last modified date/time
 -----------------------
 
-A helper adapter interface is defined which can be used to determine the last
+The ``ILastModified`` adapter interface can be used to describe the last
 modified date of a given published object::
 
     class ILastModified(Interface):
@@ -130,18 +158,158 @@ modified date of a given published object::
         def __call__():
             """Return the last-modified date, as a Python datetime object.
             
-            The datetime returned must be timezone aware.
+            The datetime returned must be timezone aware and should normally
+            be in the local timezone.
         
             May return None if the last modified date cannot be determined.
             """
 
-One implementation exists for this interface: When looked up for a Zope
-browser view, it will delegate to an ``ILastModified`` adapter on the view's
-context. Higher level packages may choose to implement this adapter for
-other types of publishable resources, and/or different types of view context.
+One implementation for this interface is provided by default: When looked up
+for a Zope browser view, it will delegate to an ``ILastModified`` adapter on
+the view's context. Higher level packages may choose to implement this adapter
+for other types of publishable resources, and/or different types of view
+context.
+
+Cache purging
+-------------
+
+High-traffic sites often put a caching proxy such as `Squid`_ or `Varnish`_
+in front of the web application server to offload the caching of resources.
+Such proxies can be controlled via response headers (perhaps set via caching
+operations looked up based on ``z3c.caching`` rulesets). Most caching proxies
+also support so-called ``PURGE`` requests, where the web application sends a
+request directly to the caching proxy asking it to purge (presumably old)
+copies it may hold of a resource (e.g. because that resource has changed).
+
+This package does not implement any communication with caching proxies. If
+you need that in a Zope 2 context, consider `plone.cachepurging`_. However,
+a few components are included to help packages declare their behaviour in
+relation to a caching proxy that supports purging.
+
+Firstly, ``z3.caching`` defines a ``Purge`` event, described the interface
+``z3c.caching.interfaces.IPurgeEvent``::
+
+    class IPurgeEvent(IObjectEvent):
+        """Event which can be fired to purge a particular object.
+    
+        This event is not fired anywhere in this package. Instead, higher level
+        frameworks are expected to fire this event when an object may need to be
+        purged.
+    
+        It is safe to fire the event multiple times for the same object. A given
+        object will only be purged once.
+        """
+
+If an object has been changed so that it may need to be purged, you can fire
+the event, like so::
+
+    from z3c.caching.purge import Purge
+    from zope.event import notify
+    
+    notify(Purge(context))
+
+A higher level framework such as `plone.cachepurging`_ can listen to this
+event to queue purge requests for the object.
+
+Of course, the most common reason to purge an object's cached representations
+is that it has been modified or removed. ``z3c.caching`` provides event
+handlers for the standard ``IObjectModifiedEvent``, ``IObjectMovedEvent`` and
+``IObjectRemovedEvent`` events, which re-broadcasts a ``Purge`` event for
+the modified/moved/removed object.
+
+To opt into these event handlers, simply mark your content object with the
+``IPurgeable`` interface, e.g.::
+
+    from z3c.caching.interfaces import IPurgeable
+    
+    class MyContent(Persistent):
+        implements(IPurgeable)
+        
+        ...
+
+You can also do this declaratively in ZCML, even for classes not under your
+control::
+
+    <class class=".content.MyContent">
+        <implements interface="z3c.caching.interfaces.IPurgeable" />
+    </class>
+
+These helpers can signal to a framework like `plone.cachepurging`_ that the
+object needs to be purged, but this is not enough to know how to construct
+the ``PURGE`` request. The caching proxy also needs to be told which path or
+paths to purge. This is the job of the ``IPurgePaths`` adapter interface::
+
+    class IPurgePaths(Interface):
+        """Return paths to send as PURGE requests for a given object.
+    
+        The purging hook will look up named adapters from the objects sent to
+        the purge queue (usually by an IPurgeEvent being fired) to this interface.
+        The name is not significant, but is used to allow multiple implementations
+        whilst still permitting per-type overrides. The names should therefore
+        normally be unique, prefixed with the dotted name of the package to which
+        they belong.
+        """
+    
+        def getRelativePaths():
+            """Return a list of paths that should be purged. The paths should be
+            relative to the virtual hosting root, i.e. they should start with a
+            '/'.
+        
+            These paths will be rewritten to incorporate virtual hosting if
+            necessary.
+            """
+        
+        def getAbsolutePaths():
+            """Return a list of paths that should be purged. The paths should be
+            relative to the  domain root, i.e. they should start with a '/'.
+        
+            These paths will *not* be rewritten to incorporate virtual hosting.
+            """
+
+The difference between the "relative" and "absolute" paths only comes into
+effect if virtual hosting is used. In most cases, you want to implement
+``getRelativePaths()`` to return a path that is relative to the current
+virtual hosting root. In Zope 2, you can get this via the
+``absolute_url_path()`` function on any traversable item. Alternatively,
+you can look up an ``IAbsoluteURL`` adapter and discard the domain portion.
+
+``getAbsolutePaths()`` is mainly useful for paths that are "special" to the
+caching proxy. For example, you could configure Varnish to purge the entire
+cache when sending a request to ``/_purge_all``, and then implement
+``getAbsolutePaths()`` to return an iterable with that string in it.
+
+Here is the default implementation from `plone.cachepurging`_, which purges
+the default path of an object derived from Zope 2's ``OFS.Traversable``::
+
+    class TraversablePurgePaths(object):
+        """Default purge for OFS.Traversable-style objects
+        """
+    
+        implements(IPurgePaths)
+        adapts(ITraversable)
+    
+        def __init__(self, context):
+            self.context = context
+        
+        def getRelativePaths(self):
+            return [self.context.absolute_url_path()]
+    
+        def getAbsolutePaths(self):
+            return []    
+
+In ZCML, this is registered as::
+
+    <adapter factory=".paths.TraversablePurgePaths" name="default" />
+
+The Plone-specific `plone.app.caching` implements further adapters (with 
+other, unique names) for things like the default view method alias (``/view``)
+and downloadable paths for Archetypes image and file fields.
 
 .. _Plone: http://plone.org/
 .. _CacheFu: http://plone.org/products/cachefu
 .. _five.caching: http://pypi.python.org/pypi/five.caching
 .. _plone.caching: http://pypi.python.org/pypi/plone.caching
+.. _plone.cachepurging: http://pypi.python.org/pypi/plone.cachepurging
 .. _plone.app.caching: http://pypi.python.org/pypi/plone.app.caching
+.. _Squid: http://squid-cache.org
+.. _Varnish: http://varnish-cache.org
