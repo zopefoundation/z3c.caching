@@ -4,6 +4,7 @@ from zope.interface import Interface
 from zope.interface import implements
 
 from zope.component import provideAdapter
+from zope.component import provideUtility
 
 from z3c.caching.registry import RulesetRegistry
 from z3c.caching.registry import getGlobalRulesetRegistry
@@ -22,6 +23,8 @@ class TestView(object):
 class OtherTestView(object):
     implements(IMoreSpecificTestView)
 
+class IDummy(Interface):
+    pass
 
 class TestRulesetRegistry(TestCase):
 
@@ -98,6 +101,20 @@ class TestRulesetRegistry(TestCase):
         self.failUnless(self.registry[TestView] is None)
 
     def test_clearing_registry_removes_rulesets(self):
+        self.registry.register(ITestView, "frop")
+        
+        self.registry.clear()
+        
+        i = TestView()
+        self.failUnless(self.registry[i] is None)
+
+    def test_clearing_ignores_other_utilities(self):
+        
+        class DummyUtility(object):
+            implements(IDummy)
+        
+        provideUtility(DummyUtility())
+        
         self.registry.register(ITestView, "frop")
         
         self.registry.clear()
@@ -240,7 +257,38 @@ class TestConvenienceAPI(TestCase):
         self.assertEquals(False, self.registry.explicit)
         setExplicitMode(True)
         self.assertEquals(True, self.registry.explicit)
+
+class TestNotSetUp(TestCase):
+
+    def test_getGlobalRulesetRegistry(self):
+        from z3c.caching.registry import getGlobalRulesetRegistry
+        self.assertEquals(None, getGlobalRulesetRegistry())
     
+    def test_register(self):
+        from z3c.caching.registry import register
+        self.assertRaises(LookupError, register, TestView, 'testrule')
+    
+    def test_unregister(self):
+        from z3c.caching.registry import unregister
+        self.assertRaises(LookupError, unregister, TestView)
+    
+    def test_lookup(self):
+        from z3c.caching.registry import lookup
+        self.assertEquals(None, lookup(TestView))
+    
+    def test_enumerateTypes(self):
+        from z3c.caching.registry import enumerateTypes
+        self.assertRaises(LookupError, enumerateTypes)
+    
+    def test_declareType(self):
+        from z3c.caching.registry import declareType
+        self.assertRaises(LookupError, declareType, 'name', 'title', 'description')
+    
+    def test_setExplicitMode(self):
+        from z3c.caching.registry import setExplicitMode
+        self.assertRaises(LookupError, setExplicitMode)
+
 def test_suite():
     import unittest
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
+
