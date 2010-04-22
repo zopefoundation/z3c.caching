@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0a1 - Unreleased
-------------------
+2.0a1 - April 22, 2010
+----------------------
 
 * Added `Purge`` event and ``IPurgeable` and ``IPurgePaths`` interfaces.
   Although this package doesn't provide any purging support, it is convenient
