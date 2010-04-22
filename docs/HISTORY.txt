@@ -1,6 +1,13 @@
 Changelog
 =========
 
+
+2.0b1 - Unreleased
+------------------
+
+* ...
+
+
 2.0a1 - April 22, 2010
 ----------------------
 
@@ -26,6 +33,7 @@ Changelog
 
 * Made the registry use the ZCA more directly.
   [matthewwilkes]
+
 
 1.0b1 - October 15, 2008
 ------------------------
