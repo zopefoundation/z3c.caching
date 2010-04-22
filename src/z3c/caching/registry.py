@@ -174,4 +174,4 @@ def setExplicitMode(mode=True):
     registry.explicit = mode
 
 __all__ = ['getGlobalRulesetRegistry', 'register', 'unregister', 'lookup',
-           'enumerate', 'declareType', 'setExplicitMode']
+           'enumerateTypes', 'declareType', 'setExplicitMode']
