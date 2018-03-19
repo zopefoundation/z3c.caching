@@ -1,4 +1,4 @@
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component import adapter
 from zope.event import notify
 
@@ -8,22 +8,21 @@ from zope.lifecycleevent.interfaces import IObjectMovedEvent
 from z3c.caching.interfaces import IPurgeable
 from z3c.caching.interfaces import IPurgeEvent
 
+@implementer(IPurgeEvent)
 class Purge(object):
     """Event implementation.
-    
+
     To queue a purge for a given object, you can do::
-    
+
         from plone.cachepurging import Purge
         from zope.event import notify
-        
+
         notify(Purge(someobject))
-    
+
     The actual URL(s) to purge are looked up via any relevant IPurgeURLs
     adapters.
     """
-    
-    implements(IPurgeEvent)
-    
+
     def __init__(self, object):
         self.object = object
 
