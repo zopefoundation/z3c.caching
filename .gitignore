@@ -1,0 +1,12 @@
+*.egg-info
+*.pyc
+.Python
+.coverage
+.installed.cfg
+.tox/
+bin/
+develop-eggs/
+htmlcov/
+include/
+lib/
+pip-selfcheck.json
