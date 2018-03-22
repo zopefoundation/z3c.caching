@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = src/z3c/caching
+
+[report]
+precision = 2
