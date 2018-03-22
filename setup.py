@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-version = "3.0.dev0"
+version = "2.0.dev0"
 
 
 def read(name):
