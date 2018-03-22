@@ -43,10 +43,10 @@ class TestZCMLDeclarations(TestCase):
         rules = list(self.registry.enumerateTypes())
         rules.sort(key=lambda x: x.name)
 
-        self.assertEquals(1, len(rules))
-        self.assertEquals("rule1", rules[0].name)
-        self.assertEquals(u"Rule 1", rules[0].title)
-        self.assertEquals(u"Rule one", rules[0].description)
+        self.assertEqual(1, len(rules))
+        self.assertEqual("rule1", rules[0].name)
+        self.assertEqual(u"Rule 1", rules[0].title)
+        self.assertEqual(u"Rule one", rules[0].description)
 
     def test_declareType_multiple(self):
         zcml = xmlconfig.XMLConfig("test4.zcml", z3c.caching.tests)
@@ -64,10 +64,10 @@ class TestZCMLDeclarations(TestCase):
         rules = list(self.registry.enumerateTypes())
         rules.sort(key=lambda x: x.name)
 
-        self.assertEquals(1, len(rules))
-        self.assertEquals("rule1", rules[0].name)
-        self.assertEquals(u"Rule 1", rules[0].title)
-        self.assertEquals(u"Rule one", rules[0].description)
+        self.assertEqual(1, len(rules))
+        self.assertEqual("rule1", rules[0].name)
+        self.assertEqual(u"Rule 1", rules[0].title)
+        self.assertEqual(u"Rule one", rules[0].description)
 
         i = TestView()
         self.assertEqual(self.registry[i], "rule1")

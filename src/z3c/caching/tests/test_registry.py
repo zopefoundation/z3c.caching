@@ -1,7 +1,7 @@
 from unittest import TestCase
 import warnings
 from zope.interface import Interface
-from zope.interface import implements
+from zope.interface import implementer
 
 from zope.component import provideAdapter
 from zope.component import provideUtility
@@ -20,12 +20,14 @@ class IMoreSpecificTestView(ITestView):
     pass
 
 
+@implementer(ITestView)
 class TestView(object):
-    implements(ITestView)
+    pass
 
 
+@implementer(IMoreSpecificTestView)
 class OtherTestView(object):
-    implements(IMoreSpecificTestView)
+    pass
 
 
 class IDummy(Interface):
@@ -116,8 +118,9 @@ class TestRulesetRegistry(TestCase):
 
     def test_clearing_ignores_other_utilities(self):
 
+        @implementer(IDummy)
         class DummyUtility(object):
-            implements(IDummy)
+            pass
 
         provideUtility(DummyUtility())
 
@@ -148,13 +151,13 @@ class TestRulesetRegistry(TestCase):
         rules = list(self.registry.enumerateTypes())
         rules.sort(key=lambda x: x.name)
 
-        self.assertEquals(2, len(rules))
-        self.assertEquals("rule1", rules[0].name)
-        self.assertEquals(u"Rule One", rules[0].title)
-        self.assertEquals(u"Rule uno", rules[0].description)
-        self.assertEquals("rule2", rules[1].name)
-        self.assertEquals(u"Rule 2", rules[1].title)
-        self.assertEquals(u"Second rule", rules[1].description)
+        self.assertEqual(2, len(rules))
+        self.assertEqual("rule1", rules[0].name)
+        self.assertEqual(u"Rule One", rules[0].title)
+        self.assertEqual(u"Rule uno", rules[0].description)
+        self.assertEqual("rule2", rules[1].name)
+        self.assertEqual(u"Rule 2", rules[1].title)
+        self.assertEqual(u"Second rule", rules[1].description)
 
     def test_enumerateTypes(self):
         self.registry.declareType("rule1", u"Rule 1", u"First rule")
@@ -163,13 +166,13 @@ class TestRulesetRegistry(TestCase):
         rules = list(self.registry.enumerateTypes())
         rules.sort(key=lambda x: x.title)
 
-        self.assertEquals(2, len(rules))
-        self.assertEquals("rule1", rules[0].name)
-        self.assertEquals(u"Rule 1", rules[0].title)
-        self.assertEquals(u"First rule", rules[0].description)
-        self.assertEquals("rule2", rules[1].name)
-        self.assertEquals(u"Rule 2", rules[1].title)
-        self.assertEquals(u"Second rule", rules[1].description)
+        self.assertEqual(2, len(rules))
+        self.assertEqual("rule1", rules[0].name)
+        self.assertEqual(u"Rule 1", rules[0].title)
+        self.assertEqual(u"First rule", rules[0].description)
+        self.assertEqual("rule2", rules[1].name)
+        self.assertEqual(u"Rule 2", rules[1].title)
+        self.assertEqual(u"Second rule", rules[1].description)
 
     def test_enumerate_empty(self):
         self.assertEqual(set([]), set(self.registry.enumerateTypes()))
@@ -177,24 +180,26 @@ class TestRulesetRegistry(TestCase):
     def test_set_explicit_mode(self):
         self.registry.explicit = True
 
-        self.assertRaises(LookupError, self.registry.register, TestView, "rule1")
-        self.assertEquals(None, self.registry.lookup(TestView()))
+        with self.assertRaises(LookupError):
+            self.registry.register(TestView, "rule1")
+        self.assertIsNone(self.registry.lookup(TestView()))
 
         self.registry.declareType("rule1", u"Rule 1", u"First rule")
         self.registry.register(TestView, "rule1")
 
-        self.assertEquals("rule1", self.registry.lookup(TestView()))
+        self.assertEqual("rule1", self.registry.lookup(TestView()))
 
     def test_disable_explicit_mode(self):
         self.registry.explicit = True
 
-        self.assertRaises(LookupError, self.registry.register, TestView, "rule1")
-        self.assertEquals(None, self.registry.lookup(TestView()))
+        with self.assertRaises(LookupError):
+            self.registry.register(TestView, "rule1")
+        self.assertIsNone(self.registry.lookup(TestView()))
 
         self.registry.explicit = False
 
         self.registry.register(TestView, "rule1")
-        self.assertEquals("rule1", self.registry.lookup(TestView()))
+        self.assertEqual("rule1", self.registry.lookup(TestView()))
 
 
 class TestConvenienceAPI(TestCase):
@@ -249,53 +254,59 @@ class TestConvenienceAPI(TestCase):
         rules = list(enumerateTypes())
         rules.sort(key=lambda x: x.name)
 
-        self.assertEquals(1, len(rules))
-        self.assertEquals("rule1", rules[0].name)
-        self.assertEquals(u"Rule 1", rules[0].title)
-        self.assertEquals(u"Rule one", rules[0].description)
+        self.assertEqual(1, len(rules))
+        self.assertEqual("rule1", rules[0].name)
+        self.assertEqual(u"Rule 1", rules[0].title)
+        self.assertEqual(u"Rule one", rules[0].description)
 
     def test_set_explicit_mode(self):
         from z3c.caching.registry import setExplicitMode
 
-        self.assertEquals(False, self.registry.explicit)
+        self.assertFalse(self.registry.explicit)
         setExplicitMode()
-        self.assertEquals(True, self.registry.explicit)
+        self.assertTrue(self.registry.explicit)
         setExplicitMode(False)
-        self.assertEquals(False, self.registry.explicit)
+        self.assertFalse(self.registry.explicit)
         setExplicitMode(True)
-        self.assertEquals(True, self.registry.explicit)
+        self.assertTrue(self.registry.explicit)
+
 
 class TestNotSetUp(TestCase):
 
     def test_getGlobalRulesetRegistry(self):
         from z3c.caching.registry import getGlobalRulesetRegistry
-        self.assertEquals(None, getGlobalRulesetRegistry())
+        self.assertIsNone(getGlobalRulesetRegistry())
 
     def test_register(self):
         from z3c.caching.registry import register
-        self.assertRaises(LookupError, register, TestView, 'testrule')
+        with self.assertRaises(LookupError):
+            register(TestView, 'testrule')
 
     def test_unregister(self):
         from z3c.caching.registry import unregister
-        self.assertRaises(LookupError, unregister, TestView)
+        with self.assertRaises(LookupError):
+            unregister(TestView)
 
     def test_lookup(self):
         from z3c.caching.registry import lookup
-        self.assertEquals(None, lookup(TestView))
+        self.assertIsNone(lookup(TestView))
 
     def test_enumerateTypes(self):
         from z3c.caching.registry import enumerateTypes
-        self.assertRaises(LookupError, enumerateTypes)
+        with self.assertRaises(LookupError):
+            enumerateTypes()
 
     def test_declareType(self):
         from z3c.caching.registry import declareType
-        self.assertRaises(LookupError, declareType, 'name', 'title', 'description')
+        with self.assertRaises(LookupError):
+            declareType('name', 'title', 'description')
 
     def test_setExplicitMode(self):
         from z3c.caching.registry import setExplicitMode
-        self.assertRaises(LookupError, setExplicitMode)
+        with self.assertRaises(LookupError):
+            setExplicitMode()
+
 
 def test_suite():
     import unittest
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
-

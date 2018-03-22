@@ -1,8 +1,8 @@
 from unittest import TestCase
 import zope.component.testing
 
-from zope.interface import implements
-from zope.component import adapts, provideAdapter
+from zope.interface import implementer
+from zope.component import adapter, provideAdapter
 from zope.browser.interfaces import IView
 
 from z3c.caching.interfaces import ILastModified
@@ -19,8 +19,8 @@ class TestLastModified(TestCase):
 
     def test_no_adapter(self):
 
+        @implementer(IView)
         class DummyView(object):
-            implements(IView)
 
             def __init__(self, context, request):
                 self.context = context
@@ -38,12 +38,12 @@ class TestLastModified(TestCase):
         view = DummyView(context, request)
 
         lastModified = ILastModified(view, None)
-        self.assertEquals(None, lastModified)
+        self.assertIsNone(lastModified)
 
     def test_with_adapter(self):
 
+        @implementer(IView)
         class DummyView(object):
-            implements(IView)
 
             def __init__(self, context, request):
                 self.context = context
@@ -55,9 +55,9 @@ class TestLastModified(TestCase):
         class DummyRequest(dict):
             pass
 
+        @implementer(ILastModified)
+        @adapter(DummyContext)
         class DummyLastModified(object):
-            implements(ILastModified)
-            adapts(DummyContext)
 
             def __init__(self, context):
                 self.context = context
