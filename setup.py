@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
-import os.path
 
-version = "2.0b1"
+
+version = "3.0.dev0"
 
 
 def read(name):
@@ -14,13 +14,20 @@ setup(
     version=version,
     description="Caching infrastructure for web apps",
     long_description="\n\n".join([
-        read("README.txt"),
-        read(os.path.join("docs", "HISTORY.txt"))]),
+        read("README.rst"),
+        read("CHANGES.rst")]),
     classifiers=[
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords="zope caching",

@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-2.0b1 - Unreleased
-------------------
+3.0 - Unreleased
+----------------
 
-* ...
+* Added support for Python 3.5, 3.6, 3.7, PyPy2 and PyPy3.
+  [icemac]
 
 
 2.0a1 - April 22, 2010
