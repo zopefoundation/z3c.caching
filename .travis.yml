@@ -5,7 +5,7 @@ python:
 install:
     - pip install -U pip setuptools
     - pip install -U coverage coveralls zope.testrunner
-    - pip install -U -e .[test]
+    - pip install -U -e .[zcml]
 script:
     - coverage run -m zope.testrunner --test-path=src
 after_success:
