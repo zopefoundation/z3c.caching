@@ -1,9 +1,10 @@
-from zope.interface import Interface
-from zope.configuration.fields import GlobalObject
-from zope.configuration.fields import PythonIdentifier
 from z3c.caching.registry import getGlobalRulesetRegistry
+from zope.configuration.fields import GlobalObject
+from zope.interface import Interface
+from zope.schema import TextLine
 
 ORDER = 1000001
+
 
 class IRuleset(Interface):
     for_ = GlobalObject(
@@ -12,11 +13,12 @@ class IRuleset(Interface):
             default=None,
             required=True)
 
-    ruleset = PythonIdentifier(
+    ruleset = TextLine(
             title=u"ruleset",
             description=u"The id of the cache ruleset to use",
             default=None,
             required=True)
+
 
 def rulesetType(_context, name, title, description=u""):
     # The order is 'late' so that we know getGlobalRulesetRegistry() will
@@ -39,10 +41,11 @@ def ruleset(_context, for_, ruleset):
             args=(for_, ruleset,),
             order=ORDER + 1)
 
-# Handlers
 
+# Handlers
 def declareType(name, title, description):
     getGlobalRulesetRegistry().declareType(name, title, description)
+
 
 def register(for_, ruleset):
     getGlobalRulesetRegistry().register(for_, ruleset)
