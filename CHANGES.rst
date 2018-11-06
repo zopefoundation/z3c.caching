@@ -5,8 +5,9 @@ Changelog
 2.1 (unreleased)
 ----------------
 
-- Change ruleset of IRuleset to TextLine to work with zope.configuration >= 4.2.
-  See https://github.com/plone/Products.CMFPlone/issues/2591
+- Changed ruleset of IRuleset to TextLine to work with
+  `zope.configuration >= 4.2`. See
+  `Products.CMFPlone#2591 <https://github.com/plone/Products.CMFPlone/issues/2591>`_.
   [pbauer]
 
 
