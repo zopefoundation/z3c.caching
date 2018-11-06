@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.1 (unreleased)
+2.1 (2018-11-06)
 ----------------
 
 - Changed ruleset of IRuleset to TextLine to work with
