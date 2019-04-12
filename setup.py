@@ -42,7 +42,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools",
-        "zope.interface",
+        "zope.interface>=3.8.0",
         "zope.component",
         "zope.event",
         "zope.lifecycleevent",

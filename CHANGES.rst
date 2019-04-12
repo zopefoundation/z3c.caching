@@ -3,10 +3,11 @@ Changelog
 
 
 2.2 (unreleased)
-----------------
+------------------
 
-- Nothing changed yet.
-
+- Fix DeprecationWarnings: import moves from ``zope.component`` to ``zope.interface``.
+  Depend on zope.interface >= 3.8.0.
+  [jensens]
 
 2.1 (2018-11-06)
 ----------------
