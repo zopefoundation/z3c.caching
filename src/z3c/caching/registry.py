@@ -13,7 +13,7 @@ import warnings
 from zope.interface import implementer, Interface, Attribute
 
 from zope.component import adapts, queryUtility, getUtilitiesFor, getGlobalSiteManager
-from zope.component.interfaces import IComponents
+from zope.interface.interfaces import IComponents
 
 from z3c.caching.interfaces import IRulesetRegistry
 from z3c.caching.interfaces import IRulesetType
