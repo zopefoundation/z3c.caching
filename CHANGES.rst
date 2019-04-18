@@ -9,6 +9,9 @@ Changelog
   Depend on zope.interface >= 3.8.0.
   [jensens]
 
+- Add support for Python 3.8a3.
+  [icemac]
+
 2.1 (2018-11-06)
 ----------------
 
