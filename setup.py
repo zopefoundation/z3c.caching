@@ -17,6 +17,7 @@ setup(
         read("README.rst"),
         read("CHANGES.rst")]),
     classifiers=[
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
