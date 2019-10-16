@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-2.2 (unreleased)
-------------------
+2.2 (2019-10-16)
+----------------
 
 - Fix DeprecationWarnings: import moves from ``zope.component`` to ``zope.interface``.
   Depend on zope.interface >= 3.8.0.
