@@ -9,6 +9,7 @@ def read(name):
     with open(name) as f:
         return f.read()
 
+
 setup(
     name="z3c.caching",
     version=version,
@@ -28,6 +29,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -44,15 +46,15 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools",
-        "zope.interface>=3.8.0",
+        "zope.browser",
         "zope.component",
         "zope.event",
+        "zope.interface>=3.8.0",
+        "zope.schema",
         "zope.lifecycleevent",
-        "zope.browser",
     ],
     extras_require={
-        "zcml": ("zope.configuration", )
+        "zcml": ("zope.configuration", ),
+        "test": ("zope.configuration", ),
     },
-    tests_require="nose >=0.10.0b1",
-    test_suite="nose.collector",
 )

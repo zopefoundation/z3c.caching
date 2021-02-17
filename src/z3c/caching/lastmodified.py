@@ -4,6 +4,7 @@ from zope.component import adapter
 from zope.browser.interfaces import IView
 from z3c.caching.interfaces import ILastModified
 
+
 @implementer(ILastModified)
 @adapter(IView)
 def viewDelegateLastModified(view):

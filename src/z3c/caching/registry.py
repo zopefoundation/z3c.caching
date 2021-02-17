@@ -12,11 +12,13 @@ import warnings
 
 from zope.interface import implementer, Interface, Attribute
 
-from zope.component import adapts, queryUtility, getUtilitiesFor, getGlobalSiteManager
+from zope.component import adapts, queryUtility, getUtilitiesFor
+from zope.component import getGlobalSiteManager
 from zope.interface.interfaces import IComponents
 
 from z3c.caching.interfaces import IRulesetRegistry
 from z3c.caching.interfaces import IRulesetType
+
 
 class ICacheRule(Interface):
     """Represents the cache rule applied to an object.
@@ -25,12 +27,14 @@ class ICacheRule(Interface):
 
     id = Attribute("The identifier of this cache rule")
 
+
 @implementer(ICacheRule)
 class CacheRule(object):
     __slots__ = ("id")
 
     def __init__(self, identifier):
         self.id = identifier
+
 
 @implementer(IRulesetType)
 class RulesetType(object):
@@ -41,6 +45,7 @@ class RulesetType(object):
         self.title = title
         self.description = description
 
+
 def get_context_to_cacherule_adapter_factory(rule):
     """Given a cache rule return an adapter factory which expects an object
     but only returns the pre-specified cache rule."""
@@ -48,6 +53,7 @@ def get_context_to_cacherule_adapter_factory(rule):
         return CacheRule(rule)
     CacheRuleFactory.id = rule
     return CacheRuleFactory
+
 
 @implementer(IRulesetRegistry)
 class RulesetRegistry(object):
@@ -58,20 +64,25 @@ class RulesetRegistry(object):
         self.registry = registry
 
     def register(self, obj, rule):
-        rule = str(rule) # We only want ascii, tyvm
+        rule = str(rule)  # We only want ascii, tyvm
 
         if self.explicit and queryUtility(IRulesetType, rule) is None:
-            raise LookupError("Explicit mode set and ruleset %s not found" % rule)
+            raise LookupError(
+                "Explicit mode set and ruleset %s not found" %
+                rule)
 
         factory = get_context_to_cacherule_adapter_factory(rule)
         existing = self.directLookup(obj)
         if existing is None:
             # Only register if we haven't got this one already
-            self.registry.registerAdapter(factory, provided=ICacheRule, required=(obj,))
+            self.registry.registerAdapter(
+                factory, provided=ICacheRule, required=(obj,))
         else:
-            warnings.warn("Ignoring attempted to register caching rule %s for %s.  %s is already registered." % (rule, repr(obj), existing))
+            warnings.warn(
+                "Ignoring attempted to register caching rule %s for %s."
+                "  %s is already registered." %
+                (rule, repr(obj), existing))
         return None
-
 
     def unregister(self, obj):
         self.registry.unregisterAdapter(provided=ICacheRule, required=(obj,))
@@ -82,7 +93,7 @@ class RulesetRegistry(object):
         # storage will be changing size
         for rule in list(self.registry.registeredAdapters()):
             if rule.provided != ICacheRule:
-                continue # Not our responsibility
+                continue  # Not our responsibility
             else:
                 self.registry.unregisterAdapter(factory=rule.factory,
                                                 provided=rule.provided,
@@ -90,7 +101,7 @@ class RulesetRegistry(object):
 
         for type_ in list(self.registry.registeredUtilities()):
             if type_.provided != IRulesetType:
-                continue # Not our responsibility
+                continue  # Not our responsibility
             else:
                 self.registry.unregisterUtility(component=type_.component,
                                                 provided=IRulesetType,
@@ -117,6 +128,7 @@ class RulesetRegistry(object):
 
     def _get_explicit(self):
         return getattr(self.registry, '_z3c_caching_explicit', False)
+
     def _set_explicit(self, value):
         setattr(self.registry, '_z3c_caching_explicit', value)
     explicit = property(_get_explicit, _set_explicit)
@@ -132,10 +144,12 @@ class RulesetRegistry(object):
                 return rule.factory(None).id
         return None
 
+
 def getGlobalRulesetRegistry():
     return IRulesetRegistry(getGlobalSiteManager(), None)
 
 # Convenience API
+
 
 def register(obj, rule):
     registry = getGlobalRulesetRegistry()
@@ -143,11 +157,13 @@ def register(obj, rule):
         raise LookupError("Global registry initialised")
     return registry.register(obj, rule)
 
+
 def unregister(obj):
     registry = getGlobalRulesetRegistry()
     if registry is None:
         raise LookupError("Global registry initialised")
     return registry.unregister(obj)
+
 
 def lookup(obj):
     registry = getGlobalRulesetRegistry()
@@ -155,11 +171,13 @@ def lookup(obj):
         return None
     return registry.lookup(obj)
 
+
 def enumerateTypes():
     registry = getGlobalRulesetRegistry()
     if registry is None:
         raise LookupError("Global registry initialised")
     return registry.enumerateTypes()
+
 
 def declareType(name, title, description):
     registry = getGlobalRulesetRegistry()
@@ -167,11 +185,13 @@ def declareType(name, title, description):
         raise LookupError("Global registry initialised")
     registry.declareType(name, title, description)
 
+
 def setExplicitMode(mode=True):
     registry = getGlobalRulesetRegistry()
     if registry is None:
         raise LookupError("Global registry initialised")
     registry.explicit = mode
+
 
 __all__ = ['getGlobalRulesetRegistry', 'register', 'unregister', 'lookup',
            'enumerateTypes', 'declareType', 'setExplicitMode']
