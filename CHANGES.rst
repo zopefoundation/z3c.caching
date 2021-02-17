@@ -5,7 +5,8 @@ Changelog
 2.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add support for Python 3.9.
+  [icemac]
 
 
 2.2 (2019-10-16)
@@ -30,7 +31,7 @@ Changelog
 2.0 (2018-03-22)
 ----------------
 
-* Added support for Python 3.5, 3.6, 3.7, PyPy2 and PyPy3.
+* Add support for Python 3.5, 3.6, 3.7, PyPy2 and PyPy3.
   [icemac]
 
 

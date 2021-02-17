@@ -2,6 +2,7 @@ from zope.interface import Interface
 from zope.interface.interfaces import IObjectEvent
 from zope import schema
 
+
 class IRulesetRegistry(Interface):
 
     def register(obj, rule):
@@ -42,20 +43,22 @@ class IRulesetRegistry(Interface):
         """
 
     explicit = schema.Bool(
-            title=u"Explicit mode",
-            description=u"If true, ruleset types must be declared before being used.",
-            required=True,
-            default=False
-        )
+        title=u"Explicit mode",
+        description=(u"If true, ruleset types must be declared before being"
+                     u" used."),
+        required=True,
+        default=False)
+
 
 class IRulesetType(Interface):
     """A ruleset type. The name can be used in a <cache:ruleset /> directive.
     The title and description are used for UI support.
     """
 
-    name        = schema.DottedName(title=u"Ruleset name")
-    title       = schema.TextLine(title=u"Title")
+    name = schema.DottedName(title=u"Ruleset name")
+    title = schema.TextLine(title=u"Title")
     description = schema.TextLine(title=u"Description", required=False)
+
 
 class ILastModified(Interface):
     """An abstraction to help obtain a last-modified date for a published
@@ -74,6 +77,7 @@ class ILastModified(Interface):
         May return None if the last modified date cannot be determined.
         """
 
+
 class IPurgeEvent(IObjectEvent):
     """Event which can be fired to purge a particular object.
 
@@ -85,6 +89,7 @@ class IPurgeEvent(IObjectEvent):
     object will only be purged once.
     """
 
+
 class IPurgeable(Interface):
     """Marker interface for content which should be purged when modified or
     removed.
@@ -93,6 +98,7 @@ class IPurgeable(Interface):
     ``IObjectRemovedEvent`` for contexts providing this interface. These are
     automatically purged.
     """
+
 
 class IPurgePaths(Interface):
     """Return paths to send as PURGE requests for a given object.

@@ -8,6 +8,7 @@ from zope.lifecycleevent.interfaces import IObjectMovedEvent
 from z3c.caching.interfaces import IPurgeable
 from z3c.caching.interfaces import IPurgeEvent
 
+
 @implementer(IPurgeEvent)
 class Purge(object):
     """Event implementation.
@@ -30,6 +31,7 @@ class Purge(object):
 @adapter(IPurgeable, IObjectModifiedEvent)
 def purgeOnModified(object, event):
     notify(Purge(object))
+
 
 @adapter(IPurgeable, IObjectMovedEvent)
 def purgeOnMovedOrRemoved(object, event):
