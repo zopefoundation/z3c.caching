@@ -1,6 +1,6 @@
+from zope import schema
 from zope.interface import Interface
 from zope.interface.interfaces import IObjectEvent
-from zope import schema
 
 
 class IRulesetRegistry(Interface):

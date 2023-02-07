@@ -1,15 +1,13 @@
 from unittest import TestCase
 
+import zope.component.testing
 from zope.component import provideAdapter
 from zope.configuration import xmlconfig
 
-from z3c.caching.registry import getGlobalRulesetRegistry
-from z3c.caching.registry import RulesetRegistry
-
-from z3c.caching.tests.test_registry import TestView
-
-import zope.component.testing
 import z3c.caching.tests
+from z3c.caching.registry import RulesetRegistry
+from z3c.caching.registry import getGlobalRulesetRegistry
+from z3c.caching.tests.test_registry import TestView
 
 
 class TestZCMLDeclarations(TestCase):

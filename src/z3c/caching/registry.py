@@ -10,10 +10,13 @@ the ruleset id.
 
 import warnings
 
-from zope.interface import implementer, Interface, Attribute
-
-from zope.component import adapts, queryUtility, getUtilitiesFor
+from zope.component import adapts
 from zope.component import getGlobalSiteManager
+from zope.component import getUtilitiesFor
+from zope.component import queryUtility
+from zope.interface import Attribute
+from zope.interface import Interface
+from zope.interface import implementer
 from zope.interface.interfaces import IComponents
 
 from z3c.caching.interfaces import IRulesetRegistry

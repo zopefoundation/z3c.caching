@@ -1,9 +1,10 @@
 from unittest import TestCase
-import zope.component.testing
 
-from zope.interface import implementer
-from zope.component import adapter, provideAdapter
+import zope.component.testing
 from zope.browser.interfaces import IView
+from zope.component import adapter
+from zope.component import provideAdapter
+from zope.interface import implementer
 
 from z3c.caching.interfaces import ILastModified
 from z3c.caching.lastmodified import viewDelegateLastModified

@@ -1,15 +1,14 @@
-from unittest import TestCase
 import warnings
+from unittest import TestCase
+
+import zope.component.testing
+from zope.component import provideAdapter
+from zope.component import provideUtility
 from zope.interface import Interface
 from zope.interface import implementer
 
-from zope.component import provideAdapter
-from zope.component import provideUtility
-
 from z3c.caching.registry import RulesetRegistry
 from z3c.caching.registry import getGlobalRulesetRegistry
-
-import zope.component.testing
 
 
 class ITestView(Interface):
@@ -217,38 +216,45 @@ class TestConvenienceAPI(TestCase):
         self.assertIsNone(lookup(None))
 
     def test_ruleset_for_class(self):
-        from z3c.caching.registry import register, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
         register(TestView, "frop")
         i = TestView()
         self.assertEqual(lookup(i), "frop")
 
     def test_ruleset_for_interface(self):
-        from z3c.caching.registry import register, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
         register(ITestView, "frop")
         i = TestView()
         self.assertEqual(lookup(i), "frop")
 
     def test_most_specific_interface_wins(self):
-        from z3c.caching.registry import register, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
         register(ITestView, "frop")
         register(IMoreSpecificTestView, "fribble")
         i = OtherTestView()
         self.assertEqual(lookup(i), "fribble")
 
     def test_unregistering_ruleset_removes_ruleset(self):
-        from z3c.caching.registry import register, unregister, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
+        from z3c.caching.registry import unregister
         register(TestView, "frop")
         unregister(TestView)
         self.assertIsNone(lookup(TestView))
 
     def test_unregistering_nonexistant_ruleset_doesnt_error(self):
-        from z3c.caching.registry import unregister, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import unregister
         self.assertIsNone(lookup(TestView))
         unregister(TestView)
         self.assertIsNone(lookup(TestView))
 
     def test_declareType_enumerateTypes(self):
-        from z3c.caching.registry import declareType, enumerateTypes
+        from z3c.caching.registry import declareType
+        from z3c.caching.registry import enumerateTypes
         declareType("rule1", u"Rule 1", u"Rule one")
 
         rules = list(enumerateTypes())

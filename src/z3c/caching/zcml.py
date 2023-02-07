@@ -1,7 +1,9 @@
-from z3c.caching.registry import getGlobalRulesetRegistry
 from zope.configuration.fields import GlobalObject
 from zope.interface import Interface
 from zope.schema import TextLine
+
+from z3c.caching.registry import getGlobalRulesetRegistry
+
 
 ORDER = 1000001
 
