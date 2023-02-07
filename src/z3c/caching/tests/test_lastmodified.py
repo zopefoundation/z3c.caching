@@ -21,13 +21,13 @@ class TestLastModified(TestCase):
     def test_no_adapter(self):
 
         @implementer(IView)
-        class DummyView(object):
+        class DummyView:
 
             def __init__(self, context, request):
                 self.context = context
                 self.request = request
 
-        class DummyContext(object):
+        class DummyContext:
             pass
 
         class DummyRequest(dict):
@@ -44,13 +44,13 @@ class TestLastModified(TestCase):
     def test_with_adapter(self):
 
         @implementer(IView)
-        class DummyView(object):
+        class DummyView:
 
             def __init__(self, context, request):
                 self.context = context
                 self.request = request
 
-        class DummyContext(object):
+        class DummyContext:
             pass
 
         class DummyRequest(dict):
@@ -58,7 +58,7 @@ class TestLastModified(TestCase):
 
         @implementer(ILastModified)
         @adapter(DummyContext)
-        class DummyLastModified(object):
+        class DummyLastModified:
 
             def __init__(self, context):
                 self.context = context

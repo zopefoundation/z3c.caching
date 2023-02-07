@@ -43,9 +43,9 @@ class IRulesetRegistry(Interface):
         """
 
     explicit = schema.Bool(
-        title=u"Explicit mode",
-        description=(u"If true, ruleset types must be declared before being"
-                     u" used."),
+        title="Explicit mode",
+        description=("If true, ruleset types must be declared before being"
+                     " used."),
         required=True,
         default=False)
 
@@ -55,9 +55,9 @@ class IRulesetType(Interface):
     The title and description are used for UI support.
     """
 
-    name = schema.DottedName(title=u"Ruleset name")
-    title = schema.TextLine(title=u"Title")
-    description = schema.TextLine(title=u"Description", required=False)
+    name = schema.DottedName(title="Ruleset name")
+    title = schema.TextLine(title="Title")
+    description = schema.TextLine(title="Description", required=False)
 
 
 class ILastModified(Interface):

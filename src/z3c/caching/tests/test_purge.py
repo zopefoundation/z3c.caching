@@ -17,7 +17,7 @@ from z3c.caching.purge import purgeOnModified
 from z3c.caching.purge import purgeOnMovedOrRemoved
 
 
-class Handler(object):
+class Handler:
 
     def __init__(self):
         self.invocations = []
@@ -31,7 +31,7 @@ class FauxContainer(dict):
     pass
 
 
-class FauxContext(object):
+class FauxContext:
 
     def __init__(self, parent=None, name=None):
         self.__parent__ = parent
@@ -39,7 +39,7 @@ class FauxContext(object):
 
 
 @implementer(IPurgeable)
-class FauxMarkedContext(object):
+class FauxMarkedContext:
 
     def __init__(self, parent=None, name=None):
         self.__parent__ = parent

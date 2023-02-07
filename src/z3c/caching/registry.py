@@ -32,7 +32,7 @@ class ICacheRule(Interface):
 
 
 @implementer(ICacheRule)
-class CacheRule(object):
+class CacheRule:
     __slots__ = ("id")
 
     def __init__(self, identifier):
@@ -40,7 +40,7 @@ class CacheRule(object):
 
 
 @implementer(IRulesetType)
-class RulesetType(object):
+class RulesetType:
     __slots__ = ('name', 'title', 'description',)
 
     def __init__(self, name, title, description):
@@ -59,7 +59,7 @@ def get_context_to_cacherule_adapter_factory(rule):
 
 
 @implementer(IRulesetRegistry)
-class RulesetRegistry(object):
+class RulesetRegistry:
 
     adapts(IComponents)
 

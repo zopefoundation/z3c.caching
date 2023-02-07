@@ -9,7 +9,7 @@ from z3c.caching.interfaces import IPurgeEvent
 
 
 @implementer(IPurgeEvent)
-class Purge(object):
+class Purge:
     """Event implementation.
 
     To queue a purge for a given object, you can do::
