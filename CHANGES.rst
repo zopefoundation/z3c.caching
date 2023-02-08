@@ -5,11 +5,10 @@ Changelog
 3.0 (unreleased)
 ----------------
 
-* Add support for Python 3.10, 3.11.
+- Drop support for Python 2.7, 3.5, 3.6.
+  [icemac]
 
-* Drop support for Python 2.7, 3.5, 3.6.
-
-- Add support for Python 3.9.
+- Add support for Python 3.9, 3.10, 3.11.
   [icemac]
 
 
