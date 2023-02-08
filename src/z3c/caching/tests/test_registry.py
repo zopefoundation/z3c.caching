@@ -1,15 +1,14 @@
-from unittest import TestCase
 import warnings
+from unittest import TestCase
+
+import zope.component.testing
+from zope.component import provideAdapter
+from zope.component import provideUtility
 from zope.interface import Interface
 from zope.interface import implementer
 
-from zope.component import provideAdapter
-from zope.component import provideUtility
-
 from z3c.caching.registry import RulesetRegistry
 from z3c.caching.registry import getGlobalRulesetRegistry
-
-import zope.component.testing
 
 
 class ITestView(Interface):
@@ -21,12 +20,12 @@ class IMoreSpecificTestView(ITestView):
 
 
 @implementer(ITestView)
-class TestView(object):
+class TestView:
     pass
 
 
 @implementer(IMoreSpecificTestView)
-class OtherTestView(object):
+class OtherTestView:
     pass
 
 
@@ -119,7 +118,7 @@ class TestRulesetRegistry(TestCase):
     def test_clearing_ignores_other_utilities(self):
 
         @implementer(IDummy)
-        class DummyUtility(object):
+        class DummyUtility:
             pass
 
         provideUtility(DummyUtility())
@@ -132,8 +131,8 @@ class TestRulesetRegistry(TestCase):
         self.assertIsNone(self.registry[i])
 
     def test_clearing_registry_removes_types(self):
-        self.registry.declareType("rule1", u"Rule 1", u"First rule")
-        self.registry.declareType("rule2", u"Rule 2", u"Second rule")
+        self.registry.declareType("rule1", "Rule 1", "First rule")
+        self.registry.declareType("rule2", "Rule 2", "Second rule")
 
         self.registry.register(ITestView, "frop")
 
@@ -144,38 +143,38 @@ class TestRulesetRegistry(TestCase):
         self.assertEqual(0, len(list(self.registry.enumerateTypes())))
 
     def test_declareType_overrides(self):
-        self.registry.declareType("rule1", u"Rule 1", u"First rule")
-        self.registry.declareType("rule2", u"Rule 2", u"Second rule")
-        self.registry.declareType("rule1", u"Rule One", u"Rule uno")
+        self.registry.declareType("rule1", "Rule 1", "First rule")
+        self.registry.declareType("rule2", "Rule 2", "Second rule")
+        self.registry.declareType("rule1", "Rule One", "Rule uno")
 
         rules = list(self.registry.enumerateTypes())
         rules.sort(key=lambda x: x.name)
 
         self.assertEqual(2, len(rules))
         self.assertEqual("rule1", rules[0].name)
-        self.assertEqual(u"Rule One", rules[0].title)
-        self.assertEqual(u"Rule uno", rules[0].description)
+        self.assertEqual("Rule One", rules[0].title)
+        self.assertEqual("Rule uno", rules[0].description)
         self.assertEqual("rule2", rules[1].name)
-        self.assertEqual(u"Rule 2", rules[1].title)
-        self.assertEqual(u"Second rule", rules[1].description)
+        self.assertEqual("Rule 2", rules[1].title)
+        self.assertEqual("Second rule", rules[1].description)
 
     def test_enumerateTypes(self):
-        self.registry.declareType("rule1", u"Rule 1", u"First rule")
-        self.registry.declareType("rule2", u"Rule 2", u"Second rule")
+        self.registry.declareType("rule1", "Rule 1", "First rule")
+        self.registry.declareType("rule2", "Rule 2", "Second rule")
 
         rules = list(self.registry.enumerateTypes())
         rules.sort(key=lambda x: x.title)
 
         self.assertEqual(2, len(rules))
         self.assertEqual("rule1", rules[0].name)
-        self.assertEqual(u"Rule 1", rules[0].title)
-        self.assertEqual(u"First rule", rules[0].description)
+        self.assertEqual("Rule 1", rules[0].title)
+        self.assertEqual("First rule", rules[0].description)
         self.assertEqual("rule2", rules[1].name)
-        self.assertEqual(u"Rule 2", rules[1].title)
-        self.assertEqual(u"Second rule", rules[1].description)
+        self.assertEqual("Rule 2", rules[1].title)
+        self.assertEqual("Second rule", rules[1].description)
 
     def test_enumerate_empty(self):
-        self.assertEqual(set([]), set(self.registry.enumerateTypes()))
+        self.assertEqual(set(), set(self.registry.enumerateTypes()))
 
     def test_set_explicit_mode(self):
         self.registry.explicit = True
@@ -184,7 +183,7 @@ class TestRulesetRegistry(TestCase):
             self.registry.register(TestView, "rule1")
         self.assertIsNone(self.registry.lookup(TestView()))
 
-        self.registry.declareType("rule1", u"Rule 1", u"First rule")
+        self.registry.declareType("rule1", "Rule 1", "First rule")
         self.registry.register(TestView, "rule1")
 
         self.assertEqual("rule1", self.registry.lookup(TestView()))
@@ -217,47 +216,54 @@ class TestConvenienceAPI(TestCase):
         self.assertIsNone(lookup(None))
 
     def test_ruleset_for_class(self):
-        from z3c.caching.registry import register, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
         register(TestView, "frop")
         i = TestView()
         self.assertEqual(lookup(i), "frop")
 
     def test_ruleset_for_interface(self):
-        from z3c.caching.registry import register, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
         register(ITestView, "frop")
         i = TestView()
         self.assertEqual(lookup(i), "frop")
 
     def test_most_specific_interface_wins(self):
-        from z3c.caching.registry import register, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
         register(ITestView, "frop")
         register(IMoreSpecificTestView, "fribble")
         i = OtherTestView()
         self.assertEqual(lookup(i), "fribble")
 
     def test_unregistering_ruleset_removes_ruleset(self):
-        from z3c.caching.registry import register, unregister, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import register
+        from z3c.caching.registry import unregister
         register(TestView, "frop")
         unregister(TestView)
         self.assertIsNone(lookup(TestView))
 
     def test_unregistering_nonexistant_ruleset_doesnt_error(self):
-        from z3c.caching.registry import unregister, lookup
+        from z3c.caching.registry import lookup
+        from z3c.caching.registry import unregister
         self.assertIsNone(lookup(TestView))
         unregister(TestView)
         self.assertIsNone(lookup(TestView))
 
     def test_declareType_enumerateTypes(self):
-        from z3c.caching.registry import declareType, enumerateTypes
-        declareType("rule1", u"Rule 1", u"Rule one")
+        from z3c.caching.registry import declareType
+        from z3c.caching.registry import enumerateTypes
+        declareType("rule1", "Rule 1", "Rule one")
 
         rules = list(enumerateTypes())
         rules.sort(key=lambda x: x.name)
 
         self.assertEqual(1, len(rules))
         self.assertEqual("rule1", rules[0].name)
-        self.assertEqual(u"Rule 1", rules[0].title)
-        self.assertEqual(u"Rule one", rules[0].description)
+        self.assertEqual("Rule 1", rules[0].title)
+        self.assertEqual("Rule one", rules[0].description)
 
     def test_set_explicit_mode(self):
         from z3c.caching.registry import setExplicitMode

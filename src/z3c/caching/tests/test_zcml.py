@@ -1,15 +1,13 @@
 from unittest import TestCase
 
+import zope.component.testing
 from zope.component import provideAdapter
 from zope.configuration import xmlconfig
 
-from z3c.caching.registry import getGlobalRulesetRegistry
-from z3c.caching.registry import RulesetRegistry
-
-from z3c.caching.tests.test_registry import TestView
-
-import zope.component.testing
 import z3c.caching.tests
+from z3c.caching.registry import RulesetRegistry
+from z3c.caching.registry import getGlobalRulesetRegistry
+from z3c.caching.tests.test_registry import TestView
 
 
 class TestZCMLDeclarations(TestCase):
@@ -45,8 +43,8 @@ class TestZCMLDeclarations(TestCase):
 
         self.assertEqual(1, len(rules))
         self.assertEqual("rule1", rules[0].name)
-        self.assertEqual(u"Rule 1", rules[0].title)
-        self.assertEqual(u"Rule one", rules[0].description)
+        self.assertEqual("Rule 1", rules[0].title)
+        self.assertEqual("Rule one", rules[0].description)
 
     def test_declareType_multiple(self):
         zcml = xmlconfig.XMLConfig("test4.zcml", z3c.caching.tests)
@@ -66,8 +64,8 @@ class TestZCMLDeclarations(TestCase):
 
         self.assertEqual(1, len(rules))
         self.assertEqual("rule1", rules[0].name)
-        self.assertEqual(u"Rule 1", rules[0].title)
-        self.assertEqual(u"Rule one", rules[0].description)
+        self.assertEqual("Rule 1", rules[0].title)
+        self.assertEqual("Rule one", rules[0].description)
 
         i = TestView()
         self.assertEqual(self.registry[i], "rule1")

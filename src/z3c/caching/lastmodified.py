@@ -1,7 +1,7 @@
-from zope.interface import implementer
-from zope.component import adapter
-
 from zope.browser.interfaces import IView
+from zope.component import adapter
+from zope.interface import implementer
+
 from z3c.caching.interfaces import ILastModified
 
 

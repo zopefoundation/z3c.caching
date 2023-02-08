@@ -10,10 +10,13 @@ the ruleset id.
 
 import warnings
 
-from zope.interface import implementer, Interface, Attribute
-
-from zope.component import adapts, queryUtility, getUtilitiesFor
+from zope.component import adapts
 from zope.component import getGlobalSiteManager
+from zope.component import getUtilitiesFor
+from zope.component import queryUtility
+from zope.interface import Attribute
+from zope.interface import Interface
+from zope.interface import implementer
 from zope.interface.interfaces import IComponents
 
 from z3c.caching.interfaces import IRulesetRegistry
@@ -29,7 +32,7 @@ class ICacheRule(Interface):
 
 
 @implementer(ICacheRule)
-class CacheRule(object):
+class CacheRule:
     __slots__ = ("id")
 
     def __init__(self, identifier):
@@ -37,7 +40,7 @@ class CacheRule(object):
 
 
 @implementer(IRulesetType)
-class RulesetType(object):
+class RulesetType:
     __slots__ = ('name', 'title', 'description',)
 
     def __init__(self, name, title, description):
@@ -56,7 +59,7 @@ def get_context_to_cacherule_adapter_factory(rule):
 
 
 @implementer(IRulesetRegistry)
-class RulesetRegistry(object):
+class RulesetRegistry:
 
     adapts(IComponents)
 

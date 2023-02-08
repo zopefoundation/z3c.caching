@@ -1,7 +1,6 @@
-from zope.interface import implementer
 from zope.component import adapter
 from zope.event import notify
-
+from zope.interface import implementer
 from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from zope.lifecycleevent.interfaces import IObjectMovedEvent
 
@@ -10,7 +9,7 @@ from z3c.caching.interfaces import IPurgeEvent
 
 
 @implementer(IPurgeEvent)
-class Purge(object):
+class Purge:
     """Event implementation.
 
     To queue a purge for a given object, you can do::

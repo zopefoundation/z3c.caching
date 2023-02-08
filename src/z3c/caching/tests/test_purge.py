@@ -1,27 +1,23 @@
 import unittest
+
 import zope.component.testing
-
-from zope.interface import implementer
-
 from zope.component import adapter
 from zope.component import provideHandler
 from zope.component.event import objectEventNotify
-
 from zope.event import notify
-
-from zope.lifecycleevent import ObjectModifiedEvent
+from zope.interface import implementer
 from zope.lifecycleevent import ObjectAddedEvent
-from zope.lifecycleevent import ObjectRemovedEvent
+from zope.lifecycleevent import ObjectModifiedEvent
 from zope.lifecycleevent import ObjectMovedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
 
-from z3c.caching.interfaces import IPurgeEvent
 from z3c.caching.interfaces import IPurgeable
-
+from z3c.caching.interfaces import IPurgeEvent
 from z3c.caching.purge import purgeOnModified
 from z3c.caching.purge import purgeOnMovedOrRemoved
 
 
-class Handler(object):
+class Handler:
 
     def __init__(self):
         self.invocations = []
@@ -35,7 +31,7 @@ class FauxContainer(dict):
     pass
 
 
-class FauxContext(object):
+class FauxContext:
 
     def __init__(self, parent=None, name=None):
         self.__parent__ = parent
@@ -43,7 +39,7 @@ class FauxContext(object):
 
 
 @implementer(IPurgeable)
-class FauxMarkedContext(object):
+class FauxMarkedContext:
 
     def __init__(self, parent=None, name=None):
         self.__parent__ = parent
