@@ -92,5 +92,3 @@ Changelog
 
 * Initial release
   [wichert]
-
-

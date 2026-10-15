@@ -38,15 +38,15 @@ use ZCML you can use the ``<cache:ruleset />`` directive::
       xmlns="http://namespaces.zope.org/zope"
       xmlns:browser="http://namespaces.zope.org/browser"
       xmlns:cache="http://namespaces.zope.org/cache"/>
-    
+
     <include package="z3c.caching" file="meta.zcml" />
-    
+
     <cache:rulesetType
         name="plone.contentTypes"
         title="Plone content types"
         description="Non-folderish content types"
         />
-    
+
     <cache:ruleset
         for=".frontpage.FrontpageView"
         ruleset="plone.contentTypes"
@@ -150,17 +150,17 @@ modified date of a given published object::
     class ILastModified(Interface):
         """An abstraction to help obtain a last-modified date for a published
         resource.
-    
+
         Should be registered as an unnamed adapter from a published object
         (e.g. a view).
         """
-    
+
         def __call__():
             """Return the last-modified date, as a Python datetime object.
-            
+
             The datetime returned must be timezone aware and should normally
             be in the local timezone.
-        
+
             May return None if the last modified date cannot be determined.
             """
 
@@ -191,11 +191,11 @@ Firstly, ``z3.caching`` defines a ``Purge`` event, described the interface
 
     class IPurgeEvent(IObjectEvent):
         """Event which can be fired to purge a particular object.
-    
+
         This event is not fired anywhere in this package. Instead, higher level
         frameworks are expected to fire this event when an object may need to be
         purged.
-    
+
         It is safe to fire the event multiple times for the same object. A given
         object will only be purged once.
         """
@@ -205,7 +205,7 @@ the event, like so::
 
     from z3c.caching.purge import Purge
     from zope.event import notify
-    
+
     notify(Purge(context))
 
 A higher level framework such as `plone.cachepurging`_ can listen to this
@@ -221,10 +221,10 @@ To opt into these event handlers, simply mark your content object with the
 ``IPurgeable`` interface, e.g.::
 
     from z3c.caching.interfaces import IPurgeable
-    
+
     class MyContent(Persistent):
         implements(IPurgeable)
-        
+
         ...
 
 You can also do this declaratively in ZCML, even for classes not under your
@@ -241,7 +241,7 @@ paths to purge. This is the job of the ``IPurgePaths`` adapter interface::
 
     class IPurgePaths(Interface):
         """Return paths to send as PURGE requests for a given object.
-    
+
         The purging hook will look up named adapters from the objects sent to
         the purge queue (usually by an IPurgeEvent being fired) to this interface.
         The name is not significant, but is used to allow multiple implementations
@@ -249,20 +249,20 @@ paths to purge. This is the job of the ``IPurgePaths`` adapter interface::
         normally be unique, prefixed with the dotted name of the package to which
         they belong.
         """
-    
+
         def getRelativePaths():
             """Return a list of paths that should be purged. The paths should be
             relative to the virtual hosting root, i.e. they should start with a
             '/'.
-        
+
             These paths will be rewritten to incorporate virtual hosting if
             necessary.
             """
-        
+
         def getAbsolutePaths():
             """Return a list of paths that should be purged. The paths should be
             relative to the  domain root, i.e. they should start with a '/'.
-        
+
             These paths will *not* be rewritten to incorporate virtual hosting.
             """
 
@@ -284,24 +284,24 @@ the default path of an object derived from Zope 2's ``OFS.Traversable``::
     class TraversablePurgePaths(object):
         """Default purge for OFS.Traversable-style objects
         """
-    
+
         implements(IPurgePaths)
         adapts(ITraversable)
-    
+
         def __init__(self, context):
             self.context = context
-        
+
         def getRelativePaths(self):
             return [self.context.absolute_url_path()]
-    
+
         def getAbsolutePaths(self):
-            return []    
+            return []
 
 In ZCML, this is registered as::
 
     <adapter factory=".paths.TraversablePurgePaths" name="default" />
 
-The Plone-specific `plone.app.caching` implements further adapters (with 
+The Plone-specific `plone.app.caching` implements further adapters (with
 other, unique names) for things like the default view method alias (``/view``)
 and downloadable paths for Archetypes image and file fields.
 
